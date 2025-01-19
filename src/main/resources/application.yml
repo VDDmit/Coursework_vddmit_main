@@ -3,6 +3,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/task_tracker_db
     username: postgres
     password: 12341234
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -10,3 +11,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    jwt:
+      secret: my-secure-random-secret-key-for-signing
+      access-token-expiration-minutes: 15
+      refresh-token-expiration-days: 30
