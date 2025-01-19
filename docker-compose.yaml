@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: 'postgres:13-alpine3.17'
+    container_name: postgres
+    environment:
+      POSTGRES_DB: task_tracker_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12341234
+    ports:
+      - "5432:5432"
+    networks:
+      - task-tracker-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 3s
+      timeout: 1s
+      retries: 3
+networks:
+  task-tracker-net:
+    driver: bridge
