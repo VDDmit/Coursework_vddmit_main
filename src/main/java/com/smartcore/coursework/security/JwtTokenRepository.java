@@ -25,13 +25,13 @@ import java.util.UUID;
 @Repository
 public class JwtTokenRepository implements CsrfTokenRepository {
 
-    @Value("${security.jwt.secret}")
+    @Value("${spring.security.jwt.secret}")
     private String secretKey;
 
-    @Value("${security.jwt.access-token-expiration-minutes}")
+    @Value("${spring.security.jwt.access-token-expiration-minutes}")
     private int accessTokenExpirationMinutes;
 
-    @Value("${security.jwt.refresh-token-expiration-days}")
+    @Value("${spring.security.jwt.refresh-token-expiration-days}")
     private int refreshTokenExpirationDays;
 
     private static final String CSRF_COOKIE_NAME = "_csrf";
