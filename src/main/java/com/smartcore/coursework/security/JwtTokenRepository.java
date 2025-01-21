@@ -8,6 +8,7 @@ import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -31,6 +32,7 @@ public class JwtTokenRepository implements CsrfTokenRepository {
     @Value("${spring.security.jwt.access-token-expiration-minutes}")
     private int accessTokenExpirationMinutes;
 
+    @Getter
     @Value("${spring.security.jwt.refresh-token-expiration-days}")
     private int refreshTokenExpirationDays;
 
