@@ -1,22 +1,25 @@
 package com.smartcore.coursework.controller;
 
 import com.smartcore.coursework.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @Slf4j
-@RestController("/api/auth")
+@RestController
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "API для регистрации и авторизации пользователей")
 public class AuthController {
 
     private final AuthService authService;
 
+    @Operation(summary = "Регистрация пользователя", description = "Регистрация нового пользователя с предоставлением токена доступа")
     @PostMapping("/register")
     public ResponseEntity<?> register(
             @RequestParam String username,
@@ -31,6 +34,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Авторизация пользователя", description = "Вход в систему с получением токенов доступа и обновления")
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestParam String username,
