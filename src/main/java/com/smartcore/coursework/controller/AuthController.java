@@ -14,12 +14,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Tag(name = "Authentication", description = "API для регистрации и авторизации пользователей")
+@Tag(name = "Authentication", description = "API for user registration and authorization")
 public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "Регистрация пользователя", description = "Регистрация нового пользователя с предоставлением токена доступа")
+    @Operation(summary = "User registration", description = "New user registration with access token provision")
     @PostMapping("/register")
     public ResponseEntity<?> register(
             @RequestParam String username,
@@ -34,7 +34,7 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "Авторизация пользователя", description = "Вход в систему с получением токенов доступа и обновления")
+    @Operation(summary = "User authorization", description = "Log in and receive access and refresh tokens")
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestParam String username,
