@@ -24,7 +24,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
 
 
-    public String register(String username, String email, String password, String roleName) {
+    public void register(String username, String email, String password, String roleName) {
         if (appUserRepository.existsByUsername(username) || appUserRepository.existsByEmail(email)) {
             throw new RuntimeException("User with this username or email already exists");
         }
@@ -40,7 +40,6 @@ public class AuthService {
                 .xp(0)
                 .build();
         appUserRepository.save(appUser);
-        return jwtTokenRepository.generateAccessToken();
     }
 
     public Map<String, String> authenticate(String username, String password) {
