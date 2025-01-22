@@ -1,9 +1,6 @@
 package com.smartcore.coursework.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,4 +22,11 @@ public class Role {
     @NotNull
     @Column(nullable = false, unique = true, length = 255)
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccessLevel accessLevel; // HIGH, MEDIUM, LOW
+
+    @Column(length = 500)
+    private String description;
 }

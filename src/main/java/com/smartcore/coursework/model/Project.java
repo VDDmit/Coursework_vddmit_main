@@ -1,9 +1,6 @@
 package com.smartcore.coursework.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +18,10 @@ public class Project {
     @Id
     @UuidGenerator
     private String id;
+
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    private AppUser owner;
 
     @NotNull
     @Column(nullable = false, length = 255)

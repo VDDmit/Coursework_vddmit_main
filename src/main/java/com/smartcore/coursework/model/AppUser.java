@@ -44,4 +44,8 @@ public class AppUser {
     @NotNull
     @Column(nullable = false, unique = true, length = 255)
     private String username;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 }
