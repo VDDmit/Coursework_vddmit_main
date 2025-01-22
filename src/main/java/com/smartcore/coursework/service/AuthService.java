@@ -2,8 +2,10 @@ package com.smartcore.coursework.service;
 
 import com.smartcore.coursework.model.AppUser;
 import com.smartcore.coursework.model.RefreshToken;
+import com.smartcore.coursework.model.Role;
 import com.smartcore.coursework.repository.AppUserRepository;
 import com.smartcore.coursework.repository.RefreshTokenRepository;
+import com.smartcore.coursework.repository.RoleRepository;
 import com.smartcore.coursework.security.JwtTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,16 +21,21 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenRepository jwtTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final RoleRepository roleRepository;
 
 
-    public String register(String username, String email, String password) {
+    public String register(String username, String email, String password, String roleName) {
         if (appUserRepository.existsByUsername(username) || appUserRepository.existsByEmail(email)) {
             throw new RuntimeException("User with this username or email already exists");
         }
+        Role role = roleRepository
+                .findByName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role " + roleName + " not found"));
         AppUser appUser = AppUser.builder()
                 .username(username)
                 .email(email)
                 .password(passwordEncoder.encode(password))
+                .role(role)
                 .lvl(1)
                 .xp(0)
                 .build();
