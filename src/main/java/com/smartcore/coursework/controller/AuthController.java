@@ -1,12 +1,18 @@
 package com.smartcore.coursework.controller;
 
+import com.smartcore.coursework.mail.EmailService;
+import com.smartcore.coursework.service.AppUserService;
 import com.smartcore.coursework.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -18,16 +24,32 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final AppUserService appUserService;
+    private final EmailService emailService;
 
-    @Operation(summary = "User registration", description = "New user registration with access token provision")
+    @Operation(summary = "User registration", description = "Registration of a new user by the administrator")
     @PostMapping("/register")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> register(
             @RequestParam String username,
             @RequestParam String email,
-            @RequestParam String password) {
+            @RequestParam String password,
+            @RequestParam String roleName) {
         try {
-            String token = authService.register(username, email, password);
-            return ResponseEntity.ok().body("User registered successfully with token: " + token);
+            authService.register(username, email, password, roleName);
+
+            String subject = "Your Account Has Been Created";
+            String body = "<h1>Welcome, " + username + "!</h1>" +
+                    "<p>Your account has been created. Please login using the following credentials:</p>" +
+                    "<ul>" +
+                    "<li><b>Username:</b> " + username + "</li>" +
+                    "<li><b>Password:</b> " + password + "</li>" +
+                    "</ul>" +
+                    "<p>Thanks,<br>Smart Core</p>";
+
+            emailService.sendHtmlEmail(email, subject, body);
+
+            return ResponseEntity.ok().body("User registered successfully: " + appUserService.getAppUserByEmail(email));
         } catch (RuntimeException e) {
             log.error("Error during registration: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
