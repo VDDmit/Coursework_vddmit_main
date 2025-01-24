@@ -27,7 +27,10 @@ public class AuthController {
     private final AppUserAndTokenService appUserAndTokenService;
     private final EmailService emailService;
 
-    @Operation(summary = "User registration", description = "Registration of a new user by the administrator")
+    @Operation(
+            summary = "User registration",
+            description = "Registration of a new user by the administrator. Access Level: HIGH"
+    )
     @PostMapping("/register")
     @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
     public ResponseEntity<?> register(
@@ -56,7 +59,10 @@ public class AuthController {
         }
     }
 
-    @Operation(summary = "User authorization", description = "Log in and receive access and refresh tokens")
+    @Operation(
+            summary = "User authorization",
+            description = "Log in and receive access and refresh tokens. No Access Level."
+    )
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestParam String username,
