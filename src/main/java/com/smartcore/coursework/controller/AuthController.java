@@ -1,7 +1,7 @@
 package com.smartcore.coursework.controller;
 
 import com.smartcore.coursework.mail.EmailService;
-import com.smartcore.coursework.service.AppUserService;
+import com.smartcore.coursework.service.AppUserAndTokenService;
 import com.smartcore.coursework.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,12 +24,12 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-    private final AppUserService appUserService;
+    private final AppUserAndTokenService appUserAndTokenService;
     private final EmailService emailService;
 
     @Operation(summary = "User registration", description = "Registration of a new user by the administrator")
     @PostMapping("/register")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
     public ResponseEntity<?> register(
             @RequestParam String username,
             @RequestParam String email,
@@ -49,7 +49,7 @@ public class AuthController {
 
             emailService.sendHtmlEmail(email, subject, body);
 
-            return ResponseEntity.ok().body("User registered successfully: " + appUserService.getAppUserByEmail(email));
+            return ResponseEntity.ok().body("User registered successfully: " + appUserAndTokenService.getAppUserByEmail(email));
         } catch (RuntimeException e) {
             log.error("Error during registration: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
