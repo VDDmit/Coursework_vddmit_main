@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,10 @@ public class AppUserAndTokenService {
     private final AppUserRepository appUserRepository;
     private final JwtTokenRepository jwtTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+
+    public List<AppUser> getAllAppUsers() {
+        return appUserRepository.findAll();
+    }
 
     public AppUser getAppUserByEmail(String email) {
         return appUserRepository.findByEmail(email)
