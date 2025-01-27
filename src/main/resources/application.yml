@@ -20,6 +20,11 @@ spring:
     level:
       org.springframework.web: DEBUG
       org.springframework.security: DEBUG
+  springdoc:
+    api-docs:
+      enabled: true
+    swagger-ui:
+      enabled: true
   mail:
     host: smtp.yandex.ru
     port: 587
