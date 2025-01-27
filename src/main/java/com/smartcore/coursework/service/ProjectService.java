@@ -37,9 +37,15 @@ public class ProjectService {
                 .orElseThrow(() -> new RuntimeException("Project not found"));
     }
 
-    public void delete(String projectId, String userId) {
+    public boolean delete(String projectId, String userId) {
         checkAccessToProject(projectId, userId, AccessLevel.HIGH);
+
+        boolean projectExists = projectRepository.existsById(projectId);
+        if (!projectExists) {
+            throw new IllegalArgumentException("Project with ID " + projectId + " not found.");
+        }
         projectRepository.deleteById(projectId);
+        return true;
     }
 
     public List<Task> getTasksByProjectId(String projectId) {

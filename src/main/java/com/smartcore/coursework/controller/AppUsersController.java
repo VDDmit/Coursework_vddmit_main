@@ -24,12 +24,12 @@ public class AppUsersController {
             summary = "Get the current user",
             description = "Returns the current user's data based on the token. Access Level: LOW"
     )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
     @GetMapping("/me")
     public ResponseEntity<AppUser> getCurrentUser(Authentication authentication) {
-        String userId = authentication.getPrincipal().toString();
-        log.info("Fetching current user by ID: {}", userId);
-        AppUser currentUser = appUserAndTokenService.getAppUserById(userId);
+        String username = authentication.getName();
+        log.info("Fetching current user by username: {}", username);
+        AppUser currentUser = appUserAndTokenService.getAppUserByUsername(username);
         log.info("Current user retrieved: {}", currentUser);
         return ResponseEntity.ok(currentUser);
     }
@@ -38,7 +38,7 @@ public class AppUsersController {
             summary = "Get user by ID",
             description = "Returns user data based on his ID. Access Level: HIGH"
     )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
     @GetMapping("/{id}")
     public ResponseEntity<AppUser> getUserById(@PathVariable String id) {
         log.info("Fetching user by ID: {}", id);
@@ -51,20 +51,20 @@ public class AppUsersController {
             summary = "Update the current user",
             description = "Allows you to update the current user's data. Access Level: MEDIUM"
     )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).MEDIUM)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).MEDIUM)")
     @PutMapping("/me")
     public ResponseEntity<String> updateCurrentUser(@RequestBody AppUser updatedUser, Authentication authentication) {
-        String userId = authentication.getPrincipal().toString();
-        log.info("Updating current user with ID: {}", userId);
+        String username = authentication.getName();
+        log.info("Updating current user with username: {}", username);
 
-        AppUser currentUser = appUserAndTokenService.getAppUserById(userId);
+        AppUser currentUser = appUserAndTokenService.getAppUserByUsername(username);
 
         if (updatedUser.getUsername() != null) {
             log.info("Updating username from {} to {}", currentUser.getUsername(), updatedUser.getUsername());
             currentUser.setUsername(updatedUser.getUsername());
         }
         if (updatedUser.getPassword() != null) {
-            log.info("Updating password for user with ID: {}", userId);
+            log.info("Updating password for user with username: {}", username);
             currentUser.setPassword(updatedUser.getPassword());
         }
         if (updatedUser.getEmail() != null) {
@@ -81,7 +81,7 @@ public class AppUsersController {
         }
 
         appUserAndTokenService.save(currentUser);
-        log.info("User profile updated successfully for ID: {}", userId);
+        log.info("User profile updated successfully for username: {}", username);
         return ResponseEntity.ok("User profile updated successfully.");
     }
 }
