@@ -16,6 +16,10 @@ spring:
       secret: my-secure-random-secret-key-for-signing
       access-token-expiration-minutes: 15
       refresh-token-expiration-days: 30
+  logging:
+    level:
+      org.springframework.web: DEBUG
+      org.springframework.security: DEBUG
   mail:
     host: smtp.yandex.ru
     port: 587

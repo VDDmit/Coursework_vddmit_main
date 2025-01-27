@@ -48,8 +48,8 @@ public class AuthService {
         if (!passwordEncoder.matches(password, appUser.getPassword())) {
             throw new RuntimeException("Incorrect password.");
         }
-        String accessToken = jwtTokenRepository.generateAccessToken();
-        String refreshToken = jwtTokenRepository.generateRefreshToken();
+        String accessToken = jwtTokenRepository.generateAccessToken(appUser.getUsername());
+        String refreshToken = jwtTokenRepository.generateRefreshToken(appUser.getUsername());
         saveRefreshToken(appUser, refreshToken);
         return Map.of("accessToken", accessToken, "refreshToken", refreshToken);
     }

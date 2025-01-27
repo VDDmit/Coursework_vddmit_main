@@ -30,6 +30,10 @@ public class AppUserAndTokenService {
                 .orElseThrow(() -> new RuntimeException("User with email " + email + " not found."));
     }
 
+    public AppUser getAppUserByUsername(String username) {
+        return appUserRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User with username " + username + " not found."));
+    }
+
     public void save(AppUser appUser) {
         if (appUser.getPassword() != null && !appUser.getPassword().isEmpty()) {
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -38,8 +42,8 @@ public class AppUserAndTokenService {
         appUserRepository.save(appUser);
     }
 
-    public boolean hasRequiredAccess(String userId, AccessLevel requiredAccessLevel) {
-        AppUser appUser = getAppUserById(userId);
+    public boolean hasRequiredAccess(String username, AccessLevel requiredAccessLevel) {
+        AppUser appUser = getAppUserByUsername(username);
 
         if (appUser == null) {
             return false;

@@ -32,7 +32,7 @@ public class AuthController {
             description = "Registration of a new user by the administrator. Access Level: HIGH"
     )
     @PostMapping("/register")
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
     public ResponseEntity<?> register(
             @RequestParam String username,
             @RequestParam String email,
@@ -69,8 +69,11 @@ public class AuthController {
             @RequestParam String password) {
         try {
             Map<String, String> tokens = authService.authenticate(username, password);
-            return ResponseEntity.ok().body("Login successful. Access Token: " + tokens.get("accessToken") +
-                    ", Refresh Token: " + tokens.get("refreshToken"));
+
+            return ResponseEntity.ok().body(Map.of(
+                    "accessToken", tokens.get("accessToken"),
+                    "refreshToken", tokens.get("refreshToken")
+            ));
         } catch (RuntimeException e) {
             log.error("Error during login: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
