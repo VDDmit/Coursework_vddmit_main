@@ -1,6 +1,7 @@
 package com.smartcore.coursework.service;
 
 import com.smartcore.coursework.exception.EntityNotFoundException;
+import com.smartcore.coursework.model.AppUser;
 import com.smartcore.coursework.model.Task;
 import com.smartcore.coursework.repository.AppUserRepository;
 import com.smartcore.coursework.repository.TaskRepository;
@@ -60,16 +61,38 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId + " in " + ClassUtils.getClassAndMethodName()));
     }
 
-    public void markTuskAsComplete(String taskId) {
-        Task recievedTask = getTaskById(taskId);
-        recievedTask.setCompleted(true);
-        taskRepository.save(recievedTask);
+    public void markTaskAsComplete(String taskId) {
+        Task receivedTask = getTaskById(taskId);
+
+        if (!receivedTask.getCompleted()) {
+            receivedTask.setCompleted(true);
+            updateUserXp(receivedTask, receivedTask.getXp());
+            taskRepository.save(receivedTask);
+        }
     }
 
     public void markTaskAsIncomplete(String taskId) {
         Task receivedTask = getTaskById(taskId);
-        receivedTask.setCompleted(false);
-        taskRepository.save(receivedTask);
+
+        if (receivedTask.getCompleted()) {
+            receivedTask.setCompleted(false);
+            updateUserXp(receivedTask, -receivedTask.getXp());
+            taskRepository.save(receivedTask);
+        }
+    }
+
+    private void updateUserXp(Task task, int xpChange) {
+        AppUser assignedUser = task.getAssignedUser();
+
+        if (assignedUser != null) {
+            assignedUser.setXp(assignedUser.getXp() + xpChange);
+
+            if (assignedUser.getXp() < 0) {
+                assignedUser.setXp(0);
+            }
+
+            appUserRepository.save(assignedUser);
+        }
     }
 
     private void validateUserExistence(String userName) {

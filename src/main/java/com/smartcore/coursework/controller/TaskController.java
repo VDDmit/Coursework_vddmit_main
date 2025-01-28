@@ -136,7 +136,7 @@ public class TaskController {
             @PathVariable("id") String taskId) {
         log.info("Attempting to mark task with ID: {} as completed", taskId);
         try {
-            taskService.markTuskAsComplete(taskId);
+            taskService.markTaskAsComplete(taskId);
             log.info("Task with ID: {} successfully marked as completed", taskId);
             return ResponseEntity.ok("Task marked as completed.");
         } catch (Exception e) {
