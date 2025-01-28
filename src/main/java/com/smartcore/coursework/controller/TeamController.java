@@ -27,7 +27,7 @@ public class TeamController {
             summary = "Get a list of all teams",
             description = "Returns a list of all teams in the system. Access Level: LOW"
     )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
     @GetMapping("/list")
     public ResponseEntity<List<Team>> getAllTeams() {
         log.info("Fetching all teams.");
@@ -40,7 +40,7 @@ public class TeamController {
             summary = "Get teams with their members",
             description = "Returns a list of all teams with their associated members. Access Level: LOW"
     )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
     @GetMapping
     public ResponseEntity<List<TeamWithMembersDTO>> teamsWithMembers() {
         log.info("Fetching all teams with their members.");
@@ -53,7 +53,7 @@ public class TeamController {
             summary = "Create a new team",
             description = "Allows you to create a new team. Access Level: HIGH"
     )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
     @PostMapping
     public ResponseEntity<Team> createTeam(@RequestBody Team team) {
         log.info("Creating new team: {}", team);
@@ -66,7 +66,7 @@ public class TeamController {
             summary = "Update a team",
             description = "Allows you to update the name of a team by its ID. Access Level: HIGH"
     )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
     @PutMapping("/{id}")
     public ResponseEntity<Team> updateTeam(
             @Parameter(description = "The ID of the team to update", required = true)
@@ -85,7 +85,7 @@ public class TeamController {
             summary = "Delete a team",
             description = "Deletes a team by its ID. Access Level: HIGH"
     )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTeam(@PathVariable String id) {
         log.info("Deleting team with ID: {}", id);

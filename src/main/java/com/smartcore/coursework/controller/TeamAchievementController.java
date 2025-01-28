@@ -28,7 +28,7 @@ public class TeamAchievementController {
             summary = "Get teams with achievement points",
             description = "Returns a score table of all teams with their total achievement points. Access Level: LOW"
     )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
     @GetMapping("/achievement-points-score-table")
     public ResponseEntity<List<TeamWithAchievementPointsDTO>> getTeamAchievementPointsScoreTable() {
         log.info("Fetching the score table of teams with achievement points.");
@@ -41,7 +41,7 @@ public class TeamAchievementController {
             summary = "Create a new team achievement",
             description = "Allows the creation of a new team achievement. Access Level: HIGH"
     )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.id, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
     @PostMapping("/achievement")
     public ResponseEntity<TeamAchievement> createTeamAchievement(@RequestBody TeamAchievementRequestDTO request) {
         log.info("Creating a new team achievement for team: {}", request.getTeamName());
