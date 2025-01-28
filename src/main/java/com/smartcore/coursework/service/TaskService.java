@@ -86,11 +86,11 @@ public class TaskService {
 
         if (assignedUser != null) {
             assignedUser.setXp(assignedUser.getXp() + xpChange);
-
             if (assignedUser.getXp() < 0) {
                 assignedUser.setXp(0);
             }
-
+            log.info("User {} updated xp to {}, Total XP: {}",
+                    assignedUser.getId(), xpChange, assignedUser.getXp());
             appUserRepository.save(assignedUser);
         }
     }
