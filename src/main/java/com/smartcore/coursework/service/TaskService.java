@@ -24,7 +24,7 @@ public class TaskService {
         return taskRepository.findByAssignedUserUsername(userName);
     }
 
-    public List<Task> getAllTasksFromProject(String projectId) {
+    public List<Task> getAllTasksForProject(String projectId) {
         validateProjectId(projectId);
 
         List<Task> tasks = taskRepository.findByProjectId(projectId);
@@ -58,6 +58,18 @@ public class TaskService {
 
         return taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId + " in " + ClassUtils.getClassAndMethodName()));
+    }
+
+    public void markTuskAsComplete(String taskId) {
+        Task recievedTask = getTaskById(taskId);
+        recievedTask.setCompleted(true);
+        taskRepository.save(recievedTask);
+    }
+
+    public void markTaskAsIncomplete(String taskId) {
+        Task receivedTask = getTaskById(taskId);
+        receivedTask.setCompleted(false);
+        taskRepository.save(receivedTask);
     }
 
     private void validateUserExistence(String userName) {
