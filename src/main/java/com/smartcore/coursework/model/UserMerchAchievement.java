@@ -13,15 +13,15 @@ import org.hibernate.annotations.UuidGenerator;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "user_achievement")
-public class UserAchievement {
+@Table(name = "user_merch_achievement")
+public class UserMerchAchievement {
     @Id
     @UuidGenerator
     private String id;
 
     @NotNull
     @Column(nullable = false)
-    private Integer points;
+    private boolean obtained;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

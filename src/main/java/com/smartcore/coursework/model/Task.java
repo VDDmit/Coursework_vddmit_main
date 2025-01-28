@@ -37,4 +37,8 @@ public class Task {
     @NotNull
     @Column(nullable = false, length = 255)
     private String title;
+
+    @NotNull
+    @Column(nullable = false)
+    private Integer xp;
 }
