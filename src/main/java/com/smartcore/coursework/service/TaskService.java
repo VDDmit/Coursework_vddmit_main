@@ -18,7 +18,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final AppUserRepository appUserRepository;
 
-    public List<Task> getTasksByAssignedUserId(String userName) {
+    public List<Task> getTasksByAssignedUserUsername(String userName) {
         validateUserExistence(userName);
 
         return taskRepository.findByAssignedUserUsername(userName);
