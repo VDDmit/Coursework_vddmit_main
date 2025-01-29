@@ -97,4 +97,8 @@ public class AppUserAndTokenService {
             throw new IllegalArgumentException(fieldName + " cannot be null or empty in " + ClassUtils.getClassAndMethodName());
         }
     }
+
+    public boolean doesUserExist(String username) {
+        return appUserRepository.existsByUsername(username);
+    }
 }
