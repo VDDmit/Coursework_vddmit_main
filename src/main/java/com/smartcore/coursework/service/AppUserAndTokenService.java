@@ -9,6 +9,7 @@ import com.smartcore.coursework.repository.RefreshTokenRepository;
 import com.smartcore.coursework.security.JwtTokenRepository;
 import com.smartcore.coursework.util.ClassUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AppUserAndTokenService {
@@ -51,16 +53,13 @@ public class AppUserAndTokenService {
     }
 
     public boolean hasRequiredAccess(String username, AccessLevel requiredAccessLevel) {
-        validateInput(username, "Username");
-
+        log.info("Checking access for user: {}, required level: {}", username, requiredAccessLevel);
         AppUser appUser = getAppUserByUsername(username);
-        if (appUser == null) {
-            throw new EntityNotFoundException("User with username " + username + " not found in " + ClassUtils.getClassAndMethodName());
-        }
-
+        log.info("Found user: {}, access level: {}", appUser.getUsername(), appUser.getRole().getAccessLevel());
         AccessLevel appUserAccessLevel = appUser.getRole().getAccessLevel();
         return appUserAccessLevel.ordinal() <= requiredAccessLevel.ordinal();
     }
+
 
     public AppUser getAppUserById(String userId) {
         validateInput(userId, "User ID");

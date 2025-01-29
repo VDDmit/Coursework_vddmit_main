@@ -144,6 +144,7 @@ public class TaskController {
             return ResponseEntity.status(400).body("Failed to mark task as completed. " + e.getMessage());
         }
     }
+
     @Operation(
             summary = "Mark a task as incomplete",
             description = "Marks a specific task as incomplete by setting its 'completed' field to false. Requires MEDIUM access level."
