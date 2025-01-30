@@ -69,6 +69,25 @@ public class ProjectController {
     }
 
     @Operation(
+            summary = "Remove a user from a project",
+            description = "Removes a user from the specified project by username. Access Level: HIGH"
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
+    @DeleteMapping("/{projectId}/remove-user/{username}")
+    public ResponseEntity<String> removeUserFromProject(
+            @Parameter(description = "The ID of the project", required = true)
+            @PathVariable String projectId,
+            @Parameter(description = "The username of the user to remove", required = true)
+            @PathVariable String username) {
+
+        log.info("Removing user '{}' from project '{}'", username, projectId);
+        projectService.removeUserFromProject(username, projectId);
+        log.info("User '{}' successfully removed from project '{}'", username, projectId);
+
+        return ResponseEntity.ok("User removed from project successfully.");
+    }
+
+    @Operation(
             summary = "Get project by ID",
             description = "Retrieve detailed information about a project, including its tasks. Requires LOW access level."
     )
