@@ -85,6 +85,25 @@ public class AuthService {
         refreshTokenRepository.save(tokenForDatabase);
     }
 
+    public Map<String, String> refreshAccessToken(String refreshToken) {
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            throw new IllegalArgumentException("Refresh token cannot be null or empty in " + ClassUtils.getClassAndMethodName());
+        }
+        RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new EntityNotFoundException("Refresh token " + refreshToken + " not found in " + ClassUtils.getClassAndMethodName()));
+        if (storedToken.isExpired()) {
+            refreshTokenRepository.delete(storedToken);
+            throw new IllegalArgumentException("Refresh token expired, please log in again.");
+        }
+        String newAccessToken = jwtTokenRepository.generateAccessToken(storedToken.getAppUser().getUsername());
+        return Map.of("accessToken", newAccessToken);
+    }
+
+    public void logout(String refreshToken) {
+        refreshTokenRepository.findByToken(refreshToken)
+                .ifPresent(refreshTokenRepository::delete);
+    }
+
     private void validateInput(String input, String fieldName) {
         if (input == null || input.trim().isEmpty()) {
             throw new IllegalArgumentException(fieldName + " cannot be null or empty in " + ClassUtils.getClassAndMethodName());
