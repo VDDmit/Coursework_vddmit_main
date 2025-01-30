@@ -42,6 +42,24 @@ public class TeamService {
         appUserRepository.save(user);
     }
 
+    public void removeUserFromTeam(String username, String teamId) {
+        validateTeamId(teamId);
+
+        AppUser user = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username + " in " + ClassUtils.getClassAndMethodName()));
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("Team not found with ID: " + teamId + " in " + ClassUtils.getClassAndMethodName()));
+
+        if (!team.equals(user.getTeam())) {
+            throw new IllegalArgumentException("User " + username + " is not in team " + teamId);
+        }
+
+        user.setTeam(null);
+        appUserRepository.save(user);
+    }
+
+
     public Team save(Team team) {
         if (team == null) {
             throw new IllegalArgumentException("Team cannot be null in " + ClassUtils.getClassAndMethodName());

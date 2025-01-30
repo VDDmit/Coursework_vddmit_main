@@ -101,6 +101,25 @@ public class TeamController {
     }
 
     @Operation(
+            summary = "Remove a user from a team",
+            description = "Removes a user from the specified team by username. Access Level: MEDIUM"
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).MEDIUM)")
+    @DeleteMapping("/{teamId}/remove-user/{username}")
+    public ResponseEntity<String> removeUserFromTeam(
+            @Parameter(description = "The ID of the team", required = true)
+            @PathVariable String teamId,
+            @Parameter(description = "The username of the user to remove", required = true)
+            @PathVariable String username) {
+
+        log.info("Removing user '{}' from team '{}'", username, teamId);
+        teamService.removeUserFromTeam(username, teamId);
+        log.info("User '{}' successfully removed from team '{}'", username, teamId);
+
+        return ResponseEntity.ok("User removed from team successfully.");
+    }
+
+    @Operation(
             summary = "Delete a team",
             description = "Deletes a team by its ID. Access Level: HIGH"
     )
