@@ -94,4 +94,19 @@ public class AuthController {
         }
     }
 
+    @Operation(
+            summary = "Logout",
+            description = "Revoke refresh token"
+    )
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestParam String refreshToken) {
+        try {
+            authService.logout(refreshToken);
+            return ResponseEntity.ok().body("Logged out successful");
+        } catch (RuntimeException e) {
+            log.error("Error during logout: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
