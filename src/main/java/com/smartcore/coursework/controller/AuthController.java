@@ -79,4 +79,19 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @Operation(
+            summary = "Refresh access token",
+            description = "Get a new token using refresh token"
+    )
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshAccessToken(@RequestParam String refreshToken) {
+        try {
+            return ResponseEntity.ok(authService.refreshAccessToken(refreshToken));
+        } catch (RuntimeException e) {
+            log.error("Error during refresh access token: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
