@@ -54,6 +54,21 @@ public class ProjectController {
     }
 
     @Operation(
+            summary = "Add user to project",
+            description = "Assigns a user to a project. Requires MEDIUM access level."
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).MEDIUM)")
+    @PostMapping("/{projectId}/users/{username}")
+    public ResponseEntity<String> addUserToProject(
+            @PathVariable String projectId,
+            @PathVariable String username) {
+        log.info("Adding user {} to project {}", username, projectId);
+        projectService.addUserToProject(username, projectId);
+        log.info("User {} successfully added to project {}", username, projectId);
+        return ResponseEntity.ok("User added to project successfully.");
+    }
+
+    @Operation(
             summary = "Get project by ID",
             description = "Retrieve detailed information about a project, including its tasks. Requires LOW access level."
     )

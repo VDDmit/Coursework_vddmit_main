@@ -2,10 +2,8 @@ package com.smartcore.coursework.service;
 
 import com.smartcore.coursework.exception.AccessDeniedException;
 import com.smartcore.coursework.exception.EntityNotFoundException;
-import com.smartcore.coursework.model.AccessLevel;
-import com.smartcore.coursework.model.Project;
-import com.smartcore.coursework.model.Task;
-import com.smartcore.coursework.model.UserProject;
+import com.smartcore.coursework.model.*;
+import com.smartcore.coursework.repository.AppUserRepository;
 import com.smartcore.coursework.repository.ProjectRepository;
 import com.smartcore.coursework.repository.TaskRepository;
 import com.smartcore.coursework.repository.UserProjectRepository;
@@ -22,6 +20,7 @@ public class ProjectService {
     private final UserProjectRepository userProjectRepository;
     private final TaskRepository taskRepository;
     private final AppUserAndTokenService appUserAndTokenService;
+    private final AppUserRepository appUserRepository;
 
     public List<Project> getProjectsByUserId(String userId) {
         validateUserId(userId);
@@ -40,8 +39,39 @@ public class ProjectService {
         if (project == null) {
             throw new IllegalArgumentException("Project cannot be null in " + ClassUtils.getClassAndMethodName());
         }
-        return projectRepository.save(project);
+
+        Project savedProject = projectRepository.save(project);
+
+        UserProject userProject = UserProject.builder()
+                .project(savedProject)
+                .user(savedProject.getOwner())
+                .build();
+        userProjectRepository.save(userProject);
+
+        return savedProject;
     }
+
+    public void addUserToProject(String username, String projectId) {
+        validateProjectId(projectId);
+
+        AppUser user = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new EntityNotFoundException("Project not found with ID: " + projectId));
+
+        if (userProjectRepository.existsByProjectIdAndUserId(projectId, user.getId())) {
+            throw new IllegalArgumentException("User is already assigned to this project.");
+        }
+
+        UserProject userProject = UserProject.builder()
+                .user(user)
+                .project(project)
+                .build();
+
+        userProjectRepository.save(userProject);
+    }
+
 
     public Project getProjectById(String projectId) {
         validateProjectId(projectId);
