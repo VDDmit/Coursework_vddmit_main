@@ -27,6 +27,21 @@ public class TeamService {
         return teams;
     }
 
+    public void addUserToTeam(String username, String teamId) {
+        if (username == null || username.isEmpty() || teamId == null || teamId.isEmpty()) {
+            throw new IllegalArgumentException("Username and Team ID cannot be null or empty in " + ClassUtils.getClassAndMethodName());
+        }
+
+        AppUser user = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username + " in " + ClassUtils.getClassAndMethodName()));
+
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new EntityNotFoundException("Team not found with ID: " + teamId + " in " + ClassUtils.getClassAndMethodName()));
+
+        user.setTeam(team);
+        appUserRepository.save(user);
+    }
+
     public Team save(Team team) {
         if (team == null) {
             throw new IllegalArgumentException("Team cannot be null in " + ClassUtils.getClassAndMethodName());

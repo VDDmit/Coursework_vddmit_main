@@ -82,6 +82,25 @@ public class TeamController {
     }
 
     @Operation(
+            summary = "Add a user to a team",
+            description = "Adds a user to a specified team by username and team ID. Access Level: MEDIUM"
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).MEDIUM)")
+    @PostMapping("/{teamId}/add-user/{username}")
+    public ResponseEntity<String> addUserToTeam(
+            @Parameter(description = "The ID of the team", required = true)
+            @PathVariable String teamId,
+            @Parameter(description = "The username of the user to add", required = true)
+            @PathVariable String username) {
+
+        log.info("Adding user '{}' to team '{}'", username, teamId);
+        teamService.addUserToTeam(username, teamId);
+        log.info("User '{}' successfully added to team '{}'", username, teamId);
+
+        return ResponseEntity.ok("User added to team successfully.");
+    }
+
+    @Operation(
             summary = "Delete a team",
             description = "Deletes a team by its ID. Access Level: HIGH"
     )
