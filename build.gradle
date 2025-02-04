@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.1'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'gg.jte.gradle' version '3.1.16'
 }
 
 group = 'com.smartcore'
@@ -23,21 +24,29 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'com.nimbusds:nimbus-jose-jwt:9.47'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
+
+    implementation 'gg.jte:jte:3.1.16' // JTE runtime
+
+    implementation 'com.nimbusds:nimbus-jose-jwt' // JWT
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui' // Swagger
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.mapstruct:mapstruct:1.6.3'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     runtimeOnly 'org.postgresql:postgresql'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind' // Jackson
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.mockito:mockito-core:5.15.2'
+    testImplementation 'org.mockito:mockito-core'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+jte {
+    sourceDirectory = file("src/main/jte")
+    contentType = gg.jte.ContentType.Html
+    generateNativeImageResources = true
 }
 
 tasks.named('test') {

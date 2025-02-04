@@ -72,6 +72,20 @@ public class ProjectService {
         userProjectRepository.save(userProject);
     }
 
+    public void removeUserFromProject(String username, String projectId) {
+        if (projectId == null || projectId.isEmpty()) {
+            throw new IllegalArgumentException("Project ID cannot be null or empty in " + ClassUtils.getClassAndMethodName());
+        }
+
+        AppUser user = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username + " in " + ClassUtils.getClassAndMethodName()));
+
+        if (!userProjectRepository.existsByProjectIdAndUserId(projectId, user.getId())) {
+            throw new IllegalArgumentException("User " + username + " is not assigned to project " + projectId);
+        }
+
+        userProjectRepository.deleteByProjectIdAndUserId(projectId, user.getId());
+    }
 
     public Project getProjectById(String projectId) {
         validateProjectId(projectId);
@@ -94,6 +108,7 @@ public class ProjectService {
         return true;
     }
 
+    //TODO: дописать API под этот метод
     public List<Task> getTasksByProjectId(String projectId) {
         validateProjectId(projectId);
 
