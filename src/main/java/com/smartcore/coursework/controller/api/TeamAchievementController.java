@@ -1,4 +1,4 @@
-package com.smartcore.coursework.controller;
+package com.smartcore.coursework.controller.api;
 
 import com.smartcore.coursework.dto.TeamAchievementRequestDTO;
 import com.smartcore.coursework.dto.TeamWithAchievementPointsDTO;

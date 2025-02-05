@@ -1,4 +1,4 @@
-package com.smartcore.coursework.controller;
+package com.smartcore.coursework.controller.api;
 
 import com.smartcore.coursework.dto.TeamWithMembersDTO;
 import com.smartcore.coursework.model.Team;

@@ -1,4 +1,4 @@
-package com.smartcore.coursework.controller;
+package com.smartcore.coursework.controller.api;
 
 import com.smartcore.coursework.model.Task;
 import com.smartcore.coursework.service.TaskService;

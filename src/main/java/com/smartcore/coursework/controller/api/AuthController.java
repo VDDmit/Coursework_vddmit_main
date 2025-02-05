@@ -1,4 +1,4 @@
-package com.smartcore.coursework.controller;
+package com.smartcore.coursework.controller.api;
 
 import com.smartcore.coursework.mail.EmailService;
 import com.smartcore.coursework.service.AppUserAndTokenService;
