@@ -57,10 +57,10 @@ public class AuthService {
         validateInput(password, "Password");
 
         AppUser appUser = appUserRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User with username " + username + " not found in " + ClassUtils.getClassAndMethodName()));
+                .orElseThrow(() -> new EntityNotFoundException("User with username " + username + " not found :-("));
 
         if (!passwordEncoder.matches(password, appUser.getPassword())) {
-            throw new IllegalArgumentException("Incorrect password for username " + username + " in " + ClassUtils.getClassAndMethodName());
+            throw new IllegalArgumentException("Incorrect password for username " + username);
         }
 
         String accessToken = jwtTokenRepository.generateAccessToken(appUser.getUsername());

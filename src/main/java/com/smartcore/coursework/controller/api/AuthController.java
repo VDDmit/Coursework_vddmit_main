@@ -76,9 +76,11 @@ public class AuthController {
             ));
         } catch (RuntimeException e) {
             log.error("Error during login: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
 
     @Operation(
             summary = "Refresh access token",

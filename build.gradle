@@ -1,5 +1,3 @@
-import gg.jte.ContentType
-
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.1'
@@ -46,8 +44,8 @@ dependencies {
 }
 
 jte {
+    generate()
     sourceDirectory = file("src/main/jte").toPath()
-    contentType = ContentType.Html
 }
 
 tasks.named('test') {
