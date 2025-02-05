@@ -1,3 +1,5 @@
+import gg.jte.ContentType
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.1'
@@ -28,8 +30,8 @@ dependencies {
 
     implementation 'gg.jte:jte:3.1.16' // JTE runtime
 
-    implementation 'com.nimbusds:nimbus-jose-jwt' // JWT
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui' // Swagger
+    implementation 'com.nimbusds:nimbus-jose-jwt:10.0.1' // JWT
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.4' // Swagger
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.mapstruct:mapstruct:1.6.3'
@@ -44,9 +46,8 @@ dependencies {
 }
 
 jte {
-    sourceDirectory = file("src/main/jte")
-    contentType = gg.jte.ContentType.Html
-    generateNativeImageResources = true
+    sourceDirectory = file("src/main/jte").toPath()
+    contentType = ContentType.Html
 }
 
 tasks.named('test') {
