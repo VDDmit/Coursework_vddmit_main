@@ -11,9 +11,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  mvc:
-    view:
-      suffix: .jte
   security:
     jwt:
       secret: my-secure-random-secret-key-for-signing
@@ -39,5 +36,3 @@ spring:
         starttls.enable: true
         starttls.required: true
         smtp.ssl.trust: smtp.yandex.ru
-  jte:
-    dynamic: true

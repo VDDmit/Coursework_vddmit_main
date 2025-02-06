@@ -1,0 +1,118 @@
+/* Общие стили */
+body {
+    background-color: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Контейнер */
+.container {
+    max-width: 100%;
+    width: 450px; /* Увеличил ширину */
+}
+
+/* Карточка */
+.card {
+    background: linear-gradient(145deg, #111111, #1c1c1c);
+    border-radius: 12px;
+    padding: 35px;
+    box-shadow: 0 4px 20px rgba(0, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.card:hover {
+    box-shadow: 0 6px 30px rgba(0, 255, 255, 0.4);
+}
+
+/* Заголовок */
+h2 {
+    /*text-align: center;*/
+    font-weight: 600;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #00eaff;
+}
+h1 {
+    text-align: left;
+    font-size: 50px;
+}
+
+/* Поля ввода */
+.form-control {
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    color: #e0e0e0;
+    border-radius: 8px;
+    padding: 14px;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 16px;
+}
+
+.form-control:focus {
+    background: #1e1e1e;
+    border-color: #00eaff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+/* Увеличенный отступ между полем пароля и кнопкой */
+.mb-4 {
+    margin-bottom: 28px; /* Было 20px, сделал 28px */
+}
+
+/* Кнопка */
+.btn-primary {
+    background: linear-gradient(90deg, #00c6ff, #0072ff);
+    border: none;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 255, 255, 0.2);
+    width: 200px; /* Фиксированная ширина */
+    display: block;
+    margin: 0 auto; /* Центрируем кнопку */
+    text-align: center;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #0072ff, #00c6ff);
+    box-shadow: 0 6px 15px rgba(0, 255, 255, 0.5);
+}
+
+/* Для мобильных устройств */
+@media (max-width: 480px) {
+    .container {
+        width: 100%;
+    }
+
+    .card {
+        padding: 25px;
+    }
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.8s ease-out;
+}
