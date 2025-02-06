@@ -37,19 +37,20 @@ h2 {
     font-weight: 600;
     margin-bottom: 20px;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     color: #00eaff;
 }
 h1 {
     text-align: left;
     font-size: 50px;
+    color: #e0e0e0;
 }
 
 /* Поля ввода */
 .form-control {
     background: #161616;
     border: 1px solid #2a2a2a;
-    color: #e0e0e0;
+    color: #ffffff;
     border-radius: 8px;
     padding: 14px;
     transition: all 0.3s ease;
@@ -65,7 +66,7 @@ h1 {
 
 /* Увеличенный отступ между полем пароля и кнопкой */
 .mb-4 {
-    margin-bottom: 28px; /* Было 20px, сделал 28px */
+    margin-bottom: 28px;
 }
 
 /* Кнопка */
