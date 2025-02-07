@@ -25,24 +25,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
-        final String jwtToken;
-        final String username;
+        String requestURI = request.getRequestURI();
+        log.info("Processing the request: {}", requestURI);
 
-        // Проверяем наличие и формат заголовка Authorization
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (requestURI.startsWith("/css/") || requestURI.startsWith("/js/") || requestURI.startsWith("/webjars/")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwtToken = authHeader.substring(7); // Убираем "Bearer "
-        username = jwtTokenRepository.getUsernameFromToken(jwtToken); // Извлекаем имя пользователя из токена
+        final String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.warn("There is no or incorrect header Authorization in the request to {}", requestURI);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String jwtToken = authHeader.substring(7);
+        String username = jwtTokenRepository.getUsernameFromToken(jwtToken);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Загружаем данные пользователя
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
-            // Проверяем валидность токена
             if (jwtTokenRepository.validateToken(jwtToken)) {
                 var authenticationToken = new JwtAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
