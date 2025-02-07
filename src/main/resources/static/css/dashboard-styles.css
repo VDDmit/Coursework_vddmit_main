@@ -1,0 +1,58 @@
+/* Основной фон */
+body {
+    background-color: #2a2a2a; /* Темный фон */
+    font-family: 'Inter', sans-serif;
+}
+
+/*
+.card {
+    border-radius: 8px; !* Скругленные углы для карточек *!
+}
+
+.card-title {
+    color: #FFFFFF;
+}
+
+.card-text {
+    color: #BBBBBB;
+}
+
+!* Кнопки *!
+.btn-outline-light {
+    border: 1px solid #fff;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background-color: #444444;
+    color: #fff;
+    border-color: #444444;
+}
+
+!* Навигация *!
+.navbar {
+    background-color: #1A1A1A; !* Темный фон для навигации *!
+}
+
+.navbar .navbar-brand {
+    color: #FFFFFF;
+}
+
+.navbar-nav .nav-link {
+    color: #B0B0B0;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #FFFFFF;
+}
+
+!* Подвал *!
+footer {
+    background-color: #1A1A1A;
+}
+
+footer p {
+    color: #BBBBBB;
+}
+*/
