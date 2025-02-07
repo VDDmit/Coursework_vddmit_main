@@ -1,20 +1,25 @@
 document.addEventListener("DOMContentLoaded", function () {
+    console.log("Страница загружена");
+
     const loginForm = document.getElementById("loginForm");
 
     if (loginForm) {
         loginForm.addEventListener("submit", async function (event) {
             event.preventDefault();
-
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
             try {
+                // Очистим localStorage перед новой попыткой входа
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
+
                 const response = await fetch("/api/auth/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
                     },
-                    body: new URLSearchParams({ username, password })
+                    body: new URLSearchParams({username, password})
                 });
 
                 const data = await response.json();
@@ -22,48 +27,57 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (response.ok) {
                     localStorage.setItem("accessToken", data.accessToken);
                     localStorage.setItem("refreshToken", data.refreshToken);
-                    console.log("Токены сохранены, перенаправление...");
-                    window.location.href = "/dashboard"; // Перенаправление
+                    console.log("Сохранили токены:", data.accessToken, data.refreshToken);
+
+                    // После входа проверяем, действителен ли токен
+                    const userResponse = await fetchWithAuth("/api/users/me");
+                    if (userResponse.ok) {
+                        console.log("Авторизация успешна, загружаем /dashboard");
+
+                        // Запрашиваем страницу с токеном
+                        fetchWithAuth("/dashboard")
+                            .then(response => response.text())
+                            .then(html => {
+                                document.open();
+                                document.write(html);
+                                document.close();
+                            });
+                    } else {
+                        console.error("Ошибка авторизации после логина.");
+                        window.location.href = "/login";
+                    }
+
                 } else {
+                    console.error("Ошибка входа:", data);
                     document.getElementById("errorMessage").innerText = data.error || "Ошибка входа";
                 }
             } catch (error) {
                 console.error("Ошибка входа:", error);
+                document.getElementById("errorMessage").innerText = "Ошибка авторизации. Попробуйте ещё раз.";
             }
         });
     }
 });
 
+
 /** Функция для получения accessToken, обновляя его при необходимости */
 async function getAccessToken() {
     let accessToken = localStorage.getItem("accessToken");
+    console.log("Получаем accessToken:", accessToken);
 
-    if (!accessToken) return null;
+    if (!accessToken) {
+        console.log("Токен не найден, вызываем logout()");
+        logout();
+        return null;
+    }
 
-    // Проверяем, не истёк ли токен
     const decoded = parseJwt(accessToken);
     const now = Math.floor(Date.now() / 1000);
+    console.log("Время истечения токена:", decoded.exp, "Текущее время:", now);
 
     if (decoded.exp < now) {
-        try {
-            const refreshToken = localStorage.getItem("refreshToken");
-            const response = await fetch("/api/auth/refresh", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({ refreshToken })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem("accessToken", data.accessToken);
-                return data.accessToken;
-            } else {
-                logout();
-            }
-        } catch (error) {
-            console.error("Ошибка обновления токена:", error);
-            logout();
-        }
+        console.log("Токен истёк, вызываем logout()");
+        logout();
     }
 
     return accessToken;
@@ -103,12 +117,11 @@ async function logout() {
     if (refreshToken) {
         await fetch("/api/auth/logout", {
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ refreshToken })
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: new URLSearchParams({refreshToken})
         });
     }
 
-    localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     window.location.href = "/login";
 }
