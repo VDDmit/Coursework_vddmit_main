@@ -72,31 +72,10 @@
 
 <!-- Подключение Bootstrap -->
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
-
 <!-- Загрузка данных о пользователе -->
-<script>
-    document.addEventListener("DOMContentLoaded", async function () {
-        try {
-            const response = await fetchWithAuth("/api/users/me", {method: "GET"});
-
-            if (response.ok) {
-                const user = await response.json();
-                console.log("Пользователь:", user.username);
-
-                // Устанавливаем имя пользователя
-                document.getElementById("username").textContent = user.username;
-            } else {
-                console.warn("Ошибка получения пользователя:", response.status);
-                logout();
-            }
-        } catch (error) {
-            console.error("Ошибка при получении пользователя:", error);
-            logout();
-        }
-    });
-</script>
 <script th:src="@{/js/auth.js}"></script>
 
+<script th:src="@{/js/dashboard.js}"></script>
 
 </body>
 </html>

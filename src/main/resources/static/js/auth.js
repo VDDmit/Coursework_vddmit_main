@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const password = document.getElementById("password").value;
 
             try {
-                // Очистим localStorage перед новой попыткой входа
+                // Очистим токены перед логином
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
 
@@ -29,24 +29,26 @@ document.addEventListener("DOMContentLoaded", function () {
                     localStorage.setItem("refreshToken", data.refreshToken);
                     console.log("Сохранили токены:", data.accessToken, data.refreshToken);
 
-                    // После входа проверяем, действителен ли токен
-                    const userResponse = await fetchWithAuth("/api/users/me");
-                    if (userResponse.ok) {
-                        console.log("Авторизация успешна, загружаем /dashboard");
+                    let options = {
+                        method: "GET",
+                        headers: {
+                            "Authorization": `Bearer ${data.accessToken}`,
+                            "Content-Type": "application/json"
+                        }
+                    };
 
-                        // Запрашиваем страницу с токеном
-                        fetchWithAuth("/dashboard")
-                            .then(response => response.text())
-                            .then(html => {
-                                document.open();
-                                document.write(html);
-                                document.close();
-                            });
+                    console.log("Отправляем запрос на /api/users/me с заголовками:", options.headers);
+                    const userResponse = await fetch("/api/users/me", options);
+
+                    console.log("Ответ от /api/users/me:", userResponse.status, userResponse.statusText);
+
+                    if (userResponse.ok) {
+                        console.log("Авторизация успешна, переходим на /dashboard");
+                        window.location.href = "/dashboard";
                     } else {
                         console.error("Ошибка авторизации после логина.");
-                        window.location.href = "/login";
+                        await logout();
                     }
-
                 } else {
                     console.error("Ошибка входа:", data);
                     document.getElementById("errorMessage").innerText = data.error || "Ошибка входа";
@@ -59,49 +61,45 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-
-/** Функция для получения accessToken, обновляя его при необходимости */
+/** Функция получения accessToken */
 async function getAccessToken() {
     let accessToken = localStorage.getItem("accessToken");
-    console.log("Получаем accessToken:", accessToken);
 
     if (!accessToken) {
-        console.log("Токен не найден, вызываем logout()");
-        logout();
+        console.warn("Токен не найден, выход...");
+        await logout();
         return null;
     }
 
     const decoded = parseJwt(accessToken);
     const now = Math.floor(Date.now() / 1000);
-    console.log("Время истечения токена:", decoded.exp, "Текущее время:", now);
 
     if (decoded.exp < now) {
-        console.log("Токен истёк, вызываем logout()");
-        logout();
+        console.warn("Токен истёк, выход...");
+        await logout();
+        return null;
     }
 
     return accessToken;
 }
 
-/** Перехват 401 и обновление токена */
+/** Запрос с авторизацией */
 async function fetchWithAuth(url, options = {}) {
     let accessToken = await getAccessToken();
-    if (!accessToken) {
-        logout();
-        return;
-    }
+    if (!accessToken) return null;
 
-    options.headers = options.headers || {};
-    options.headers.Authorization = `Bearer ${accessToken}`;
+    options.headers = {
+        ...options.headers,
+        Authorization: `Bearer ${accessToken}`
+    };
 
+    console.log("Отправляем запрос на", url, "с заголовками", options.headers);
     let response = await fetch(url, options);
 
     if (response.status === 401) {
+        console.warn("Получен 401, пробуем заново...");
         accessToken = await getAccessToken();
-        if (!accessToken) {
-            logout();
-            return;
-        }
+        if (!accessToken) return null;
 
         options.headers.Authorization = `Bearer ${accessToken}`;
         response = await fetch(url, options);
@@ -110,7 +108,7 @@ async function fetchWithAuth(url, options = {}) {
     return response;
 }
 
-/** Выход из системы */
+/** Выход */
 async function logout() {
     const refreshToken = localStorage.getItem("refreshToken");
 
@@ -122,7 +120,7 @@ async function logout() {
         });
     }
 
-    localStorage.removeItem("refreshToken");
+    localStorage.clear();
     window.location.href = "/login";
 }
 
