@@ -52,7 +52,7 @@ public class RoleInitializer implements CommandLineRunner {
                     .password(new BCryptPasswordEncoder().encode("adminPassword"))
                     .role(adminRole)
                     .lvl(1)
-                    .xp(0)
+                    .xp(4999)
                     .build();
 
             appUserRepository.save(adminUser);
@@ -78,7 +78,7 @@ public class RoleInitializer implements CommandLineRunner {
             // Инициализация задач для проектов
             Task task1 = Task.builder()
                     .title("Task 1 for Project 1")
-                    .description("This is the first task in Project 1")
+                    .description("Изучение алгоритмов сортировки важно для оптимизации работы приложений и улучшения производительности.")
                     .completed(false)
                     .assignedUser(adminUser)
                     .project(project1)
