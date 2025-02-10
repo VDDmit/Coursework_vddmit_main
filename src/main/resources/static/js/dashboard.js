@@ -1,55 +1,122 @@
 document.addEventListener("DOMContentLoaded", async function () {
     try {
-        // Получаем данные о пользователе
-        const userResponse = await fetchWithAuth("/api/users/me", {method: "GET"});
-        if (userResponse.ok) {
-            const user = await userResponse.json();
-            document.getElementById("username").textContent = user.username;
-        } else {
-            console.warn("Ошибка получения пользователя:", userResponse.status);
-            logout();
-        }
-
-        // Загружаем список задач
-        const tasksResponse = await fetchWithAuth("/api/tasks/list", {method: "GET"});
-        if (tasksResponse.ok) {
-            const tasks = await tasksResponse.json();
-            console.log("Задачи загружены:", tasks);
-            renderTasks(tasks);
-        } else {
-            console.warn("Ошибка загрузки задач:", tasksResponse.status);
-        }
-
+        await loadUser();
+        await updateUserLevelInfo();
+        await loadTasks();
     } catch (error) {
         console.error("Ошибка при загрузке данных:", error);
         logout();
     }
 });
 
-function renderTasks(tasks) {
-    const taskContainer = document.querySelector(".list-group");
-    taskContainer.innerHTML = ""; // Очищаем список перед добавлением новых задач
+// Загрузка данных о пользователе (имя)
+async function loadUser() {
+    try {
+        const response = await fetchWithAuth("/api/users/me");
+        if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
+        const user = await response.json();
+        document.getElementById("username").textContent = user.username;
+    } catch (error) {
+        console.warn("Ошибка получения пользователя:", error);
+        logout();
+    }
+}
 
-    if (tasks.length === 0) {
+// Обновление информации об уровне и XP
+async function updateUserLevelInfo() {
+    try {
+        const response = await fetchWithAuth("/api/users/level-up", {method: "POST"});
+        if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
+        const user = await response.json();
+        // Обновляем блок с информацией о уровне
+        document.getElementById("levelInfo").innerHTML = `Уровень: ${user.lvl} | XP: ${user.xp} | До след. уровня: ${user.lvl * 1000 - user.xp} XP`;
+    } catch (error) {
+        console.warn("Ошибка обновления уровня:", error);
+    }
+}
+
+// Глобальный массив для хранения задач
+let tasks = [];
+
+// Загрузка списка задач
+async function loadTasks() {
+    try {
+        const response = await fetchWithAuth("/api/tasks/list");
+        if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
+        tasks = await response.json();
+        renderTasks(tasks);
+    } catch (error) {
+        console.warn("Ошибка загрузки задач:", error);
+    }
+}
+
+// Функция сортировки задач
+function sortTasks(type) {
+    if (type === "completed") {
+        // Сначала выполненные задачи
+        tasks.sort((a, b) => b.completed - a.completed);
+    } else if (type === "incomplete") {
+        // Сначала невыполненные задачи
+        tasks.sort((a, b) => a.completed - b.completed);
+    }
+    renderTasks(tasks);
+}
+
+// Отображение списка задач с полной информацией
+function renderTasks(tasks) {
+    const taskContainer = document.getElementById("taskList");
+    taskContainer.innerHTML = ""; // Очистка контейнера
+
+    if (!tasks.length) {
         taskContainer.innerHTML = `<p class="text-secondary">У вас нет задач.</p>`;
         return;
     }
 
     tasks.forEach(task => {
-        const taskItem = document.createElement("div");
-        taskItem.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center", "bg-dark", "text-light");
+        const taskItem = document.createElement("a");
+        taskItem.href = `/tasks/${task.id}`;
+        taskItem.classList.add(
+            "list-group-item",
+            "list-group-item-action",
+            "bg-dark",
+            "text-light",
+            "d-flex",
+            "flex-column",
+            "hover-effect"
+        );
 
+        // Определяем статус задачи
+        const status = task.completed
+            ? '<span class="text-success">✅ Выполнена</span>'
+            : '<span class="text-danger">❌ В работе</span>';
+
+        // Обрезка длинного описания
+        const description = task.description && task.description.length > 50
+            ? task.description.slice(0, 50) + "..."
+            : (task.description || "Без описания");
+
+        // Вывод XP, проекта и назначенного пользователя с проверкой на null
+        const xp = task.xp !== null ? `🎖️ XP: ${task.xp}` : "🎖️ XP: 0";
+        const projectTitle = task.project && task.project.title
+            ? `📌 Проект: ${task.project.title}`
+            : "📌 Проект: Не указан";
+        const assignedUser = task.assignedUser && task.assignedUser.username
+            ? `👤 ${task.assignedUser.username}`
+            : "👤 Не назначен";
+
+        // Формируем HTML задачи
         taskItem.innerHTML = `
-                <div>
-                    <h5>${task.title}</h5>
-                    <p class="small text-secondary">${task.description}</p>
-                </div>
-                <div>
-                    <a href="/tasks/edit/${task.id}" class="btn btn-warning btn-sm">Редактировать</a>
-                    <a href="/tasks/delete/${task.id}" class="btn btn-danger btn-sm">Удалить</a>
-                </div>
-            `;
+            <div class="d-flex justify-content-between w-100">
+                <h5 class="mb-1">${task.title}</h5>
+                <small>${status}</small>
+            </div>
+            <p class="mb-1 small text-secondary">${description}</p>
+            <div class="d-flex justify-content-between text-muted small">
+                <span class="text-light">${xp}</span>
+                <span class="text-light">${projectTitle}</span>
+                <span class="text-light">${assignedUser}</span>
+            </div>
+        `;
         taskContainer.appendChild(taskItem);
     });
 }
-

@@ -7,39 +7,36 @@
 
     <!-- Bootstrap -->
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
-    <!-- JQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <!-- Кастомные стили -->
-    <link rel="stylesheet" th:href="@{/css/dashboard-styles.css}">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Кастомные стили -->
+    <link rel="stylesheet" th:href="@{/css/dashboard-styles.css}">
 </head>
-<body>
+<body class="bg-dark text-light">
 
-<!-- Навигация -->
+<!-- Навигационная панель -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-mid-gray">
     <div class="container-fluid">
         <a class="navbar-brand" href="/dashboard">SmartCore</a>
-
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="/projects">Проекты</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/tasks">Задачи</a>
-                </li>
-
-                <!-- Мини-профиль пользователя -->
+                <li class="nav-item"><a class="nav-link" href="/teams">Команды</a></li>
+                <li class="nav-item"><a class="nav-link" href="/projects">Проекты</a></li>
+                <li class="nav-item"><a class="nav-link" href="/tasks">Задачи</a></li>
+                <!-- Профиль пользователя -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
-                       id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                       data-bs-toggle="dropdown">
                         <img id="userAvatar" src="/img/avatar-default.png" alt="Аватар" class="rounded-circle"
                              width="32" height="32">
                         <span id="username" class="ms-2">Загрузка...</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="/profile">Профиль</a></li>
+                        <li><a class="dropdown-item" href="/my_team">Моя команда</a></li>
                         <li><a class="dropdown-item text-danger" href="/logout">Выход</a></li>
                     </ul>
                 </li>
@@ -48,23 +45,56 @@
     </div>
 </nav>
 
-<!-- Основной контейнер -->
+<!-- Основной контент -->
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="text-light">Мои задачи</h2>
-        <a href="/tasks/new" class="btn btn-primary">Добавить задачу</a>
-    </div>
-
-    <div class="list-group">
-        <div th:each="task : ${tasks}"
-             class="list-group-item d-flex justify-content-between align-items-center bg-dark text-light">
-            <div>
-                <h5 th:text="${task.title}"></h5>
-                <p th:text="${task.description}" class="small text-secondary"></p>
+    <div class="row">
+        <!-- Блок "Мои задачи" -->
+        <div class="col-md-4">
+            <div class="p-3 bg-secondary rounded">
+                <h3 class="d-flex justify-content-between align-items-center">
+                    Мои задачи
+                    <!-- Кнопка сортировки -->
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="sortDropdown"
+                                data-bs-toggle="dropdown">
+                            🔄
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="#" onclick="sortTasks('completed')">✅ Сначала
+                                выполненные</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTasks('incomplete')">❌ Сначала
+                                невыполненные</a></li>
+                        </ul>
+                    </div>
+                </h3>
+                <!-- Кнопка "Добавить задачу" -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <a href="/tasks/new" class="btn btn-primary w-100">➕ Добавить задачу</a>
+                </div>
+                <!-- Блок для отображения уровня и XP -->
+                <div id="levelInfo" class="mb-3 text-light">
+                    Загрузка уровня...
+                </div>
+                <!-- Список задач -->
+                <div class="list-group" id="taskList">
+                    <p class="text-secondary">Загрузка задач...</p>
+                </div>
             </div>
-            <div>
-                <a th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-warning btn-sm">Редактировать</a>
-                <a th:href="@{/tasks/delete/{id}(id=${task.id})}" class="btn btn-danger btn-sm">Удалить</a>
+        </div>
+
+        <!-- Вторая колонка -->
+        <div class="col-md-4">
+            <div class="p-3 bg-secondary rounded">
+                <h3>Контейнер 2</h3>
+                <p>Содержание второго контейнера.</p>
+            </div>
+        </div>
+
+        <!-- Третья колонка -->
+        <div class="col-md-4">
+            <div class="p-3 bg-secondary rounded">
+                <h3>Контейнер 3</h3>
+                <p>Содержание третьего контейнера.</p>
             </div>
         </div>
     </div>
@@ -72,10 +102,8 @@
 
 <!-- Подключение Bootstrap -->
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
-<!-- Загрузка данных о пользователе -->
+<!-- Скрипты -->
 <script th:src="@{/js/auth.js}"></script>
-
 <script th:src="@{/js/dashboard.js}"></script>
-
 </body>
 </html>
