@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         await loadUser();
         await updateUserLevelInfo();
         await loadTasks();
+        initializeSearch(); // Инициализируем поиск после загрузки задач
     } catch (error) {
         console.error("Ошибка при загрузке данных:", error);
         logout();
@@ -25,11 +26,12 @@ async function loadUser() {
 // Обновление информации об уровне и XP
 async function updateUserLevelInfo() {
     try {
-        const response = await fetchWithAuth("/api/users/level-up", {method: "POST"});
+        const response = await fetchWithAuth("/api/users/level-up", { method: "POST" });
         if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
         const user = await response.json();
         // Обновляем блок с информацией о уровне
-        document.getElementById("levelInfo").innerHTML = `Уровень: ${user.lvl} | XP: ${user.xp} | До след. уровня: ${user.lvl * 1000 - user.xp} XP`;
+        document.getElementById("levelInfo").innerHTML =
+            `Уровень: ${user.lvl} | XP: ${user.xp} | До след. уровня: ${user.lvl * 1000 - user.xp} XP`;
     } catch (error) {
         console.warn("Ошибка обновления уровня:", error);
     }
@@ -62,17 +64,31 @@ function sortTasks(type) {
     renderTasks(tasks);
 }
 
+// Инициализация поиска по задачам
+function initializeSearch() {
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", function () {
+        const query = this.value.trim().toLowerCase();
+        const filteredTasks = tasks.filter(task => {
+            const titleMatch = task.title.toLowerCase().includes(query);
+            const descriptionMatch = task.description && task.description.toLowerCase().includes(query);
+            return titleMatch || descriptionMatch;
+        });
+        renderTasks(filteredTasks);
+    });
+}
+
 // Отображение списка задач с полной информацией
-function renderTasks(tasks) {
+function renderTasks(tasksArray) {
     const taskContainer = document.getElementById("taskList");
     taskContainer.innerHTML = ""; // Очистка контейнера
 
-    if (!tasks.length) {
+    if (!tasksArray.length) {
         taskContainer.innerHTML = `<p class="text-secondary">У вас нет задач.</p>`;
         return;
     }
 
-    tasks.forEach(task => {
+    tasksArray.forEach(task => {
         const taskItem = document.createElement("a");
         taskItem.href = `/tasks/${task.id}`;
         taskItem.classList.add(
@@ -97,8 +113,8 @@ function renderTasks(tasks) {
 
         // Вывод XP, проекта и назначенного пользователя с проверкой на null
         const xp = task.xp !== null ? `🎖️ XP: ${task.xp}` : "🎖️ XP: 0";
-        const projectTitle = task.project && task.project.title
-            ? `📌 Проект: ${task.project.title}`
+        const projectTitle = task.project && task.project.name
+            ? `📌 Проект: ${task.project.name}`
             : "📌 Проект: Не указан";
         const assignedUser = task.assignedUser && task.assignedUser.username
             ? `👤 ${task.assignedUser.username}`

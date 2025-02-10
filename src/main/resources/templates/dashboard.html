@@ -60,23 +60,19 @@
                             🔄
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="#" onclick="sortTasks('completed')">✅ Сначала
-                                выполненные</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="sortTasks('incomplete')">❌ Сначала
-                                невыполненные</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTasks('completed')">✅ Сначала выполненные</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTasks('incomplete')">❌ Сначала невыполненные</a></li>
                         </ul>
                     </div>
                 </h3>
-                <!-- Кнопка "Добавить задачу" -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <a href="/tasks/new" class="btn btn-primary w-100">➕ Добавить задачу</a>
-                </div>
                 <!-- Блок для отображения уровня и XP -->
                 <div id="levelInfo" class="mb-3 text-light">
                     Загрузка уровня...
                 </div>
-                <!-- Список задач -->
-                <div class="list-group" id="taskList">
+                <!-- Поле поиска задач -->
+                <input type="text" id="searchInput" placeholder="Поиск задач..." class="form-control mb-3">
+                <!-- Список задач с внутренним скроллингом -->
+                <div class="list-group" id="taskList" style="max-height: 400px; overflow-y: auto;">
                     <p class="text-secondary">Загрузка задач...</p>
                 </div>
             </div>
