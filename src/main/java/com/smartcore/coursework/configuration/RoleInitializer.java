@@ -7,7 +7,7 @@ import com.smartcore.coursework.repository.RoleRepository;
 import com.smartcore.coursework.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +17,7 @@ public class RoleInitializer implements CommandLineRunner {
     private final AppUserRepository appUserRepository;
     private final ProjectRepository projectRepository;
     private final TaskRepository taskRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
@@ -47,7 +48,7 @@ public class RoleInitializer implements CommandLineRunner {
             AppUser adminUser = AppUser.builder()
                     .username("admin")
                     .email("admin@example.com")
-                    .password(new BCryptPasswordEncoder().encode("adminPassword"))
+                    .password(passwordEncoder.encode("adminPassword"))
                     .role(adminRole)
                     .lvl(1)
                     .xp(4999)
@@ -88,7 +89,7 @@ public class RoleInitializer implements CommandLineRunner {
 
             Task task1 = Task.builder()
                     .title("Task 1 for Project 1")
-                    .description("Изучение алгоритмов сортировки важно для оптимизации работы приложений и улучшения производительности.")
+                    .description("Studying sorting algorithms is important for optimizing application performance and efficiency.")
                     .completed(false)
                     .assignedUser(adminUser)
                     .project(project1)
