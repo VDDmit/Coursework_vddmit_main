@@ -10,20 +10,22 @@ import com.smartcore.coursework.repository.RoleRepository;
 import com.smartcore.coursework.security.JwtTokenRepository;
 import com.smartcore.coursework.util.ClassUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final AppUserRepository appUserRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtTokenRepository jwtTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public void register(String username, String email, String password, String roleName) {
         validateInput(username, "Username");
@@ -59,8 +61,12 @@ public class AuthService {
         AppUser appUser = appUserRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User with username " + username + " not found :-("));
 
+        log.debug("Entered password: {}", password);
+        log.debug("Hash from DB: {}", appUser.getPassword());
+        log.debug("Verification result: {}", passwordEncoder.matches(password, appUser.getPassword()));
+
         if (!passwordEncoder.matches(password, appUser.getPassword())) {
-            throw new IllegalArgumentException("Incorrect password for username " + username);
+            throw new IllegalArgumentException("Incorrect password in AuthService " + username);
         }
 
         String accessToken = jwtTokenRepository.generateAccessToken(appUser.getUsername());

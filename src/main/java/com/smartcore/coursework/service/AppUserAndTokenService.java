@@ -10,7 +10,6 @@ import com.smartcore.coursework.security.JwtTokenRepository;
 import com.smartcore.coursework.util.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +23,7 @@ public class AppUserAndTokenService {
     private final AppUserRepository appUserRepository;
     private final JwtTokenRepository jwtTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<AppUser> getAllAppUsers() {
         return appUserRepository.findAll();
@@ -46,11 +46,35 @@ public class AppUserAndTokenService {
             throw new IllegalArgumentException("AppUser cannot be null in " + ClassUtils.getClassAndMethodName());
         }
         if (appUser.getPassword() != null && !appUser.getPassword().isEmpty()) {
-            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+            AppUser existingUser = appUserRepository.findById(appUser.getId())
+                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+            if (!passwordEncoder.matches(appUser.getPassword(), existingUser.getPassword())) {
+                appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+            }
         }
         appUserRepository.save(appUser);
     }
+
+
+    public void changeTheLvl(AppUser appUser, int toChangeSoManyLvlUnits) {
+        if (appUser == null) {
+            throw new IllegalArgumentException("AppUser cannot be null in " + ClassUtils.getClassAndMethodName());
+        }
+        int newXp = appUser.getXp() + toChangeSoManyLvlUnits;
+        appUser.setXp(newXp);
+
+        int newLevel = calculateLevelFromXp(newXp);
+        appUser.setLvl(newLevel);
+
+        appUserRepository.save(appUser);
+    }
+
+    private int calculateLevelFromXp(int xp) {
+        int level = xp / 1000;
+        return Math.min(level, 10);  // Limit the maximum level 10
+    }
+
 
     public boolean hasRequiredAccess(String username, AccessLevel requiredAccessLevel) {
         log.info("Checking access for user: {}, required level: {}", username, requiredAccessLevel);

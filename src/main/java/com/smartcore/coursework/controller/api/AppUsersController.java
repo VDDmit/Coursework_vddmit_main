@@ -84,24 +84,4 @@ public class AppUsersController {
         log.info("User profile updated successfully for username: {}", username);
         return ResponseEntity.ok("User profile updated successfully.");
     }
-
-    @Operation(
-            summary = "Level up the current user",
-            description = "Automatically increases the user's level based on accumulated XP (each 1000 XP increases level). Access Level: LOW"
-    )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
-    @PostMapping("/level-up")
-    public ResponseEntity<AppUser> levelUpCurrentUser(Authentication authentication) {
-        String username = authentication.getName();
-        log.info("Checking level up for user: {}", username);
-        AppUser currentUser = appUserAndTokenService.getAppUserByUsername(username);
-        int currentXP = currentUser.getXp();
-        int calculatedLevel = (currentXP / 1000) + 1; // каждый 1000 XP – новый уровень (начало с 1)
-        if (calculatedLevel > currentUser.getLvl()) {
-            currentUser.setLvl(calculatedLevel);
-            appUserAndTokenService.save(currentUser);
-            log.info("User {} leveled up to level {}", username, calculatedLevel);
-        }
-        return ResponseEntity.ok(currentUser);
-    }
 }

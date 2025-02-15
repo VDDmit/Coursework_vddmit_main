@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -43,7 +40,7 @@ public class AuthController {
 
             String subject = "Your Account Has Been Created";
             String body = "<h1>Welcome, " + username + "!</h1>" +
-                    "<p>Your account has been created. Please login using the following credentials:</p>" +
+                    "<p>Your account has been created. Please log in using the following credentials:</p>" +
                     "<ul>" +
                     "<li><b>Username:</b> " + username + "</li>" +
                     "<li><b>Password:</b> " + password + "</li>" +
@@ -59,39 +56,40 @@ public class AuthController {
         }
     }
 
-    @Operation(
-            summary = "User authorization",
-            description = "Log in and receive access and refresh tokens. No Access Level."
-    )
+    @Operation(summary = "User authorization", description = "Log in and receive access and refresh tokens.")
     @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @RequestParam String username,
-            @RequestParam String password) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
+        log.info("Attempting to authenticate user: {}", request);
+
+        String username = request.get("username");
+        String password = request.get("password");
+
+        if (username == null || password == null || username.isBlank() || password.isBlank()) {
+            log.warn("Error: Empty username or password");
+            return ResponseEntity.badRequest().body(Map.of("error", "Username and password are required"));
+        }
+
         try {
+            log.info("Before authentication: username={} password={}", username, password);
             Map<String, String> tokens = authService.authenticate(username, password);
-
-            return ResponseEntity.ok().body(Map.of(
-                    "accessToken", tokens.get("accessToken"),
-                    "refreshToken", tokens.get("refreshToken")
-            ));
-        } catch (RuntimeException e) {
-            log.error("Error during login: {}", e.getMessage());
-
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+            log.info("Tokens successfully created for {}: {}", username, tokens);
+            return ResponseEntity.ok(tokens);
+        } catch (Exception e) {
+            log.error("Authentication error: ", e);
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid username or password"));
         }
     }
 
-
     @Operation(
             summary = "Refresh access token",
-            description = "Get a new token using refresh token"
+            description = "Get a new access token using a refresh token"
     )
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(@RequestParam String refreshToken) {
         try {
             return ResponseEntity.ok(authService.refreshAccessToken(refreshToken));
         } catch (RuntimeException e) {
-            log.error("Error during refresh access token: {}", e.getMessage());
+            log.error("Error during access token refresh: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -102,13 +100,20 @@ public class AuthController {
     )
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestParam String refreshToken) {
+        log.info("Attempting to log out, refreshToken: {}", refreshToken);
+
+        if (refreshToken == null || refreshToken.isBlank()) {
+            log.warn("Error: Empty refresh token");
+            return ResponseEntity.badRequest().body("Invalid refresh token");
+        }
+
         try {
             authService.logout(refreshToken);
-            return ResponseEntity.ok().body("Logged out successful");
+            log.info("Logout successful");
+            return ResponseEntity.ok().body("Logged out successfully");
         } catch (RuntimeException e) {
             log.error("Error during logout: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 }
