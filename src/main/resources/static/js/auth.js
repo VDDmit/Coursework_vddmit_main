@@ -6,53 +6,44 @@ document.addEventListener("DOMContentLoaded", function () {
     if (loginForm) {
         loginForm.addEventListener("submit", async function (event) {
             event.preventDefault();
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (!username || !password) {
+                document.getElementById("errorMessage").innerText = "Введите логин и пароль!";
+                return;
+            }
 
             try {
-                // Очистим токены перед логином
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("refreshToken");
+
+                console.log("Отправляем запрос с данными:", {username, password});
 
                 const response = await fetch("/api/auth/login", {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
+                        "Content-Type": "application/json"
                     },
-                    body: new URLSearchParams({username, password})
+                    body: JSON.stringify({username, password})
                 });
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    localStorage.setItem("accessToken", data.accessToken);
-                    localStorage.setItem("refreshToken", data.refreshToken);
-                    console.log("Сохранили токены:", data.accessToken, data.refreshToken);
-
-                    let options = {
-                        method: "GET",
-                        headers: {
-                            "Authorization": `Bearer ${data.accessToken}`,
-                            "Content-Type": "application/json"
-                        }
-                    };
-
-                    console.log("Отправляем запрос на /api/users/me с заголовками:", options.headers);
-                    const userResponse = await fetch("/api/users/me", options);
-
-                    console.log("Ответ от /api/users/me:", userResponse.status, userResponse.statusText);
-
-                    if (userResponse.ok) {
-                        console.log("Авторизация успешна, переходим на /dashboard");
-                        window.location.href = "/dashboard";
-                    } else {
-                        console.error("Ошибка авторизации после логина.");
-                        await logout();
-                    }
-                } else {
-                    console.error("Ошибка входа:", data);
-                    document.getElementById("errorMessage").innerText = data.error || "Ошибка входа";
+                if (!response.ok) {
+                    console.error("Ошибка входа:", response.status, response.statusText);
+                    const errorData = await response.json().catch(() => null);
+                    document.getElementById("errorMessage").innerText = errorData?.error || "Ошибка входа";
+                    return;
                 }
+
+                const data = await response.json();
+                console.log("Полученные токены:", data);
+
+                localStorage.setItem("accessToken", data.accessToken);
+                localStorage.setItem("refreshToken", data.refreshToken);
+
+                console.log("Авторизация успешна, переходим на /dashboard");
+                window.location.href = "/dashboard";
+
             } catch (error) {
                 console.error("Ошибка входа:", error);
                 document.getElementById("errorMessage").innerText = "Ошибка авторизации. Попробуйте ещё раз.";
@@ -112,12 +103,20 @@ async function fetchWithAuth(url, options = {}) {
 async function logout() {
     const refreshToken = localStorage.getItem("refreshToken");
 
+    console.log("Выходим, refreshToken:", refreshToken);
+
     if (refreshToken) {
-        await fetch("/api/auth/logout", {
-            method: "POST",
-            headers: {"Content-Type": "application/x-www-form-urlencoded"},
-            body: new URLSearchParams({refreshToken})
-        });
+        try {
+            const response = await fetch("/api/auth/logout", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: new URLSearchParams({refreshToken})
+            });
+
+            console.log("Ответ сервера при выходе:", response.status, response.statusText);
+        } catch (error) {
+            console.error("Ошибка при выходе:", error);
+        }
     }
 
     localStorage.clear();
