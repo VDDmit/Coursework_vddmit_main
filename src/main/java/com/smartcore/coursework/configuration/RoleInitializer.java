@@ -6,12 +6,17 @@ import com.smartcore.coursework.repository.ProjectRepository;
 import com.smartcore.coursework.repository.RoleRepository;
 import com.smartcore.coursework.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Objects;
+
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class RoleInitializer implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final AppUserRepository appUserRepository;
@@ -21,6 +26,12 @@ public class RoleInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        initializeRoles();
+        AppUser adminUser = initializeUsers();
+        initializeProjectsAndTasks(adminUser);
+    }
+
+    private void initializeRoles() {
         if (roleRepository.count() == 0) {
             roleRepository.save(Role.builder()
                     .name("ADMIN")
@@ -39,13 +50,22 @@ public class RoleInitializer implements CommandLineRunner {
                     .accessLevel(AccessLevel.LOW)
                     .description("Basic user role with minimal access")
                     .build());
+
+            log.info("Roles initialized successfully.");
         }
+    }
 
-        if (!appUserRepository.existsByUsername("admin")) {
-            Role adminRole = roleRepository.findByName("ADMIN")
-                    .orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
+    private AppUser initializeUsers() {
+        Role adminRole = roleRepository.findByName("ADMIN")
+                .orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
+        Role moderatorRole = roleRepository.findByName("MODERATOR")
+                .orElseThrow(() -> new RuntimeException("Role MODERATOR not found"));
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Role USER not found"));
 
-            AppUser adminUser = AppUser.builder()
+        AppUser adminUser = appUserRepository.findByUsername("admin").orElse(null);
+        if (adminUser == null) {
+            adminUser = AppUser.builder()
                     .username("admin")
                     .email("admin@example.com")
                     .password(passwordEncoder.encode("adminPassword"))
@@ -53,122 +73,120 @@ public class RoleInitializer implements CommandLineRunner {
                     .lvl(1)
                     .xp(999)
                     .build();
-
             appUserRepository.save(adminUser);
-            System.out.println("Admin user created successfully.");
-
-            Project project1 = Project.builder()
-                    .name("Project 1")
-                    .description("This is the first project")
-                    .owner(adminUser)
-                    .build();
-
-            Project project2 = Project.builder()
-                    .name("Project 2")
-                    .description("This is the second project")
-                    .owner(adminUser)
-                    .build();
-
-            Project project3 = Project.builder()
-                    .name("Project 3")
-                    .description("This is the third project")
-                    .owner(adminUser)
-                    .build();
-
-            Project project4 = Project.builder()
-                    .name("Project 4")
-                    .description("This is the fourth project")
-                    .owner(adminUser)
-                    .build();
-
-            projectRepository.save(project1);
-            projectRepository.save(project2);
-            projectRepository.save(project3);
-            projectRepository.save(project4);
-            System.out.println("Projects created successfully.");
-
-            Task task1 = Task.builder()
-                    .title("Task 1 for Project 1")
-                    .description("Studying sorting algorithms is important for optimizing application performance and efficiency.")
-                    .completed(false)
-                    .assignedUser(adminUser)
-                    .project(project1)
-                    .xp(50)
-                    .build();
-
-            Task task2 = Task.builder()
-                    .title("Task 2 for Project 1")
-                    .description("This is the second task in Project 1")
-                    .completed(true)
-                    .assignedUser(adminUser)
-                    .project(project1)
-                    .xp(100)
-                    .build();
-
-            Task task3 = Task.builder()
-                    .title("Task 1 for Project 2")
-                    .description("This is the first task in Project 2")
-                    .completed(false)
-                    .assignedUser(adminUser)
-                    .project(project2)
-                    .xp(30)
-                    .build();
-
-            Task task4 = Task.builder()
-                    .title("Task 2 for Project 2")
-                    .description("This is the second task in Project 2")
-                    .completed(false)
-                    .assignedUser(adminUser)
-                    .project(project2)
-                    .xp(70)
-                    .build();
-
-            Task task5 = Task.builder()
-                    .title("Task 1 for Project 3")
-                    .description("This is the first task in Project 3")
-                    .completed(false)
-                    .assignedUser(adminUser)
-                    .project(project3)
-                    .xp(80)
-                    .build();
-
-            Task task6 = Task.builder()
-                    .title("Task 2 for Project 3")
-                    .description("This is the second task in Project 3")
-                    .completed(true)
-                    .assignedUser(adminUser)
-                    .project(project3)
-                    .xp(120)
-                    .build();
-
-            Task task7 = Task.builder()
-                    .title("Task 1 for Project 4")
-                    .description("This is the first task in Project 4")
-                    .completed(false)
-                    .assignedUser(adminUser)
-                    .project(project4)
-                    .xp(60)
-                    .build();
-
-            Task task8 = Task.builder()
-                    .title("Task 2 for Project 4")
-                    .description("This is the second task in Project 4")
-                    .completed(false)
-                    .assignedUser(adminUser)
-                    .project(project4)
-                    .xp(90)
-                    .build();
-
-            taskRepository.save(task1);
-            taskRepository.save(task2);
-            taskRepository.save(task3);
-            taskRepository.save(task4);
-            taskRepository.save(task5);
-            taskRepository.save(task6);
-            taskRepository.save(task7);
-            taskRepository.save(task8);
-
-            System.out.println("Tasks created successfully.");
+            log.info("Admin user created.");
         }
+
+        if (!appUserRepository.existsByUsername("moderator")) {
+            appUserRepository.save(AppUser.builder()
+                    .username("moderator")
+                    .email("moderator@example.com")
+                    .password(passwordEncoder.encode("moderatorPassword"))
+                    .role(moderatorRole)
+                    .lvl(5)
+                    .xp(4111)
+                    .build());
+            log.info("Moderator user created.");
+        }
+
+        if (!appUserRepository.existsByUsername("user1")) {
+            appUserRepository.save(AppUser.builder()
+                    .username("user1")
+                    .email("user1@example.com")
+                    .password(passwordEncoder.encode("user1Password"))
+                    .role(userRole)
+                    .lvl(2)
+                    .xp(1004)
+                    .build());
+        }
+
+        if (!appUserRepository.existsByUsername("user2")) {
+            appUserRepository.save(AppUser.builder()
+                    .username("user2")
+                    .email("user2@example.com")
+                    .password(passwordEncoder.encode("user2Password"))
+                    .role(userRole)
+                    .lvl(3)
+                    .xp(3004)
+                    .build());
+        }
+
+        if (!appUserRepository.existsByUsername("user3")) {
+            appUserRepository.save(AppUser.builder()
+                    .username("user3")
+                    .email("user3@example.com")
+                    .password(passwordEncoder.encode("user3Password"))
+                    .role(userRole)
+                    .lvl(1)
+                    .xp(300)
+                    .build());
+        }
+
+        return adminUser;
+    }
+
+    private void initializeProjectsAndTasks(AppUser adminUser) {
+        if (adminUser == null) {
+            log.error("Admin user is null. Skipping project and task creation.");
+            return;
+        }
+
+        // Создание проектов
+        List<Project> projects = List.of(
+                Project.builder().name("Project 1").description("This is the first project").owner(adminUser).build(),
+                Project.builder().name("Project 2").description("This is the second project").owner(adminUser).build(),
+                Project.builder().name("Project 3").description("This is the third project").owner(adminUser).build(),
+                Project.builder().name("Project 4").description("This is the fourth project").owner(adminUser).build()
+        );
+
+        projectRepository.saveAll(projects);
+        log.info("Projects created successfully.");
+
+        // Создание задач для админа
+        List<Task> tasks = List.of(
+                Task.builder().title("Task 1 for Project 1").description("Studying sorting algorithms is important for optimizing application performance and efficiency.").completed(false).assignedUser(adminUser).project(projects.get(0)).xp(50).build(),
+                Task.builder().title("Task 2 for Project 1").description("This is the second task in Project 1").completed(true).assignedUser(adminUser).project(projects.get(0)).xp(100).build(),
+                Task.builder().title("Task 1 for Project 2").description("This is the first task in Project 2").completed(false).assignedUser(adminUser).project(projects.get(1)).xp(30).build(),
+                Task.builder().title("Task 2 for Project 2").description("This is the second task in Project 2").completed(false).assignedUser(adminUser).project(projects.get(1)).xp(70).build(),
+                Task.builder().title("Task 1 for Project 3").description("This is the first task in Project 3").completed(false).assignedUser(adminUser).project(projects.get(2)).xp(80).build(),
+                Task.builder().title("Task 2 for Project 3").description("This is the second task in Project 3").completed(true).assignedUser(adminUser).project(projects.get(2)).xp(120).build(),
+                Task.builder().title("Task 1 for Project 4").description("This is the first task in Project 4").completed(false).assignedUser(adminUser).project(projects.get(3)).xp(60).build(),
+                Task.builder().title("Task 2 for Project 4").description("This is the second task in Project 4").completed(false).assignedUser(adminUser).project(projects.get(3)).xp(90).build()
+        );
+
+        taskRepository.saveAll(tasks);
+        log.info("Tasks for admin created successfully.");
+
+        // Создание задач для других пользователей
+        List<AppUser> users = List.of(
+                Objects.requireNonNull(appUserRepository.findByUsername("moderator").orElse(null)),
+                Objects.requireNonNull(appUserRepository.findByUsername("user1").orElse(null)),
+                Objects.requireNonNull(appUserRepository.findByUsername("user2").orElse(null)),
+                Objects.requireNonNull(appUserRepository.findByUsername("user3").orElse(null))
+        );
+
+        for (AppUser user : users) {
+            if (user != null) {
+                taskRepository.save(Task.builder()
+                        .title("Task 1 for Project 1 - " + user.getUsername())
+                        .description("Task for " + user.getUsername() + " in Project 1")
+                        .completed(false)
+                        .assignedUser(user)
+                        .project(projects.get(0))
+                        .xp(50)
+                        .build());
+
+                taskRepository.save(Task.builder()
+                        .title("Task 2 for Project 2 - " + user.getUsername())
+                        .description("Task for " + user.getUsername() + " in Project 2")
+                        .completed(true)
+                        .assignedUser(user)
+                        .project(projects.get(1))
+                        .xp(70)
+                        .build());
+            }
+        }
+
+        log.info("Tasks for users created successfully.");
     }
 }
