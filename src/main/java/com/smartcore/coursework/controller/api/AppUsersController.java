@@ -11,6 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.*;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/users")
@@ -33,6 +35,84 @@ public class AppUsersController {
         log.info("Current user retrieved: {}", currentUser);
         return ResponseEntity.ok(currentUser);
     }
+
+    @Operation(
+            summary = "Update XP and level",
+            description = "Adds XP to the user, checks if they can level up, and updates their level accordingly."
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @PostMapping("/update-xp")
+    public ResponseEntity<AppUser> updateXp(
+            Authentication authentication,
+            @RequestParam int xp) {
+
+        String username = authentication.getName();
+        log.info("Adding {} XP to user: {}", xp, username);
+
+        AppUser user = appUserAndTokenService.getAppUserByUsername(username);
+        if (user == null) {
+            log.warn("User not found: {}", username);
+            return ResponseEntity.notFound().build();
+        }
+
+        user.setXp(user.getXp() + xp);
+
+        while (user.getXp() >= user.getLvl() * 1000) {
+            user.setXp(user.getXp() - user.getLvl() * 1000);
+            user.setLvl(user.getLvl() + 1);
+            log.info("User {} leveled up! New level: {}", username, user.getLvl());
+        }
+
+        appUserAndTokenService.save(user);
+        return ResponseEntity.ok(user);
+    }
+
+
+    @Operation(
+            summary = "Get a top of 9 users, including the current",
+            description = "Returns a list of up to 9 users, including the current user, with their ranks in the general leaderboard. "
+                    + "Users are sorted by level (LVL) in descending order, then by experience (XP) in descending order. "
+                    + "If there are fewer than 9 users, all available users are returned. "
+                    + "The current user is always included. Access: LOW."
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @GetMapping("/me_in_top_list")
+    public ResponseEntity<List<Map<String, Object>>> getCurrentUserInTopList(Authentication authentication) {
+        List<AppUser> appUserList = appUserAndTokenService.getAllAppUsers();
+
+        appUserList.sort(Comparator.comparingInt(AppUser::getLvl).reversed()
+                .thenComparing(AppUser::getXp).reversed());
+
+        String username = authentication.getName();
+        AppUser currentUser = appUserAndTokenService.getAppUserByUsername(username);
+
+        int currentUserIndex = appUserList.indexOf(currentUser);
+
+        List<Map<String, Object>> topUsersWithRanks = getTopUsersWithRanks(appUserList, currentUserIndex);
+
+        return ResponseEntity.ok(topUsersWithRanks);
+    }
+
+    private static List<Map<String, Object>> getTopUsersWithRanks(List<AppUser> appUserList, int currentUserIndex) {
+        int totalUsers = appUserList.size();
+        int startIndex = Math.max(currentUserIndex - 4, 0);
+        int endIndex = Math.min(startIndex + 9, totalUsers);
+
+        if (endIndex - startIndex < 9 && startIndex > 0) {
+            startIndex = Math.max(endIndex - 9, 0);
+        }
+
+        List<Map<String, Object>> topUsersWithRanks = new ArrayList<>();
+        for (int i = startIndex; i < endIndex; i++) {
+            AppUser user = appUserList.get(i);
+            Map<String, Object> userInfo = new HashMap<>();
+            userInfo.put("rank", i + 1);
+            userInfo.put("user", user);
+            topUsersWithRanks.add(userInfo);
+        }
+        return topUsersWithRanks;
+    }
+
 
     @Operation(
             summary = "Get user by ID",
