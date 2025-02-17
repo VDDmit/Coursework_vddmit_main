@@ -23,17 +23,36 @@ async function loadUser() {
     }
 }
 
-// Обновление информации об уровне и XP
 async function updateUserLevelInfo() {
     try {
-        const response = await fetchWithAuth("/api/users/level-up", { method: "POST" });
+        const response = await fetchWithAuth("/api/users/me");
         if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
         const user = await response.json();
+
+        // Обновляем данные на странице
+        document.getElementById("levelText").textContent = `Уровень: ${user.lvl}`;
+        document.getElementById("xpText").textContent = `XP: ${user.xp}`;
+        document.getElementById("nextLevelText").textContent = `До след. уровня: ${user.lvl * 1000 - user.xp} XP`;
+
+    } catch (error) {
+        console.warn("Ошибка загрузки информации о пользователе:", error);
+    }
+}
+
+
+// Функция обновления XP и уровня пользователя
+async function updateUserXP(xpAmount) {
+    try {
+        const response = await fetchWithAuth(`/api/users/update-xp?xp=${xpAmount}`, { method: "POST" });
+        if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
+        const user = await response.json();
+
         // Обновляем блок с информацией о уровне
         document.getElementById("levelInfo").innerHTML =
             `Уровень: ${user.lvl} | XP: ${user.xp} | До след. уровня: ${user.lvl * 1000 - user.xp} XP`;
+
     } catch (error) {
-        console.warn("Ошибка обновления уровня:", error);
+        console.warn("Ошибка обновления XP:", error);
     }
 }
 
@@ -103,8 +122,8 @@ function renderTasks(tasksArray) {
 
         // Определяем статус задачи
         const status = task.completed
-            ? '<span class="text-success">✅ Выполнена</span>'
-            : '<span class="text-danger">❌ В работе</span>';
+            ? '<span class="badge bg-success px-2 py-1">✅ Выполнена</span>'
+            : '<span class="badge bg-warning text-dark px-2 py-1">⏳ В работе</span>';
 
         // Обрезка длинного описания
         const description = task.description && task.description.length > 50

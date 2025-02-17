@@ -19,18 +19,24 @@
 <!-- Навигационная панель -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-mid-gray">
     <div class="container-fluid">
-        <a class="navbar-brand" href="/dashboard">SmartCore</a>
+        <a class="navbar-brand fs-3" href="/dashboard">SmartCore</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="/teams">Команды</a></li>
-                <li class="nav-item"><a class="nav-link" href="/projects">Проекты</a></li>
-                <li class="nav-item"><a class="nav-link" href="/tasks">Задачи</a></li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5 px-3" href="/teams">Команды</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5 px-3" href="/projects">Проекты</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5 px-3" href="/tasks">Задачи</a>
+                </li>
                 <!-- Профиль пользователя -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                    <a class="nav-link dropdown-toggle d-flex align-items-center fs-5 px-3" href="#" id="userDropdown"
                        data-bs-toggle="dropdown">
                         <img id="userAvatar" src="/img/avatar-default.png" alt="Аватар" class="rounded-circle"
                              width="32" height="32">
@@ -62,15 +68,20 @@
                             🔄
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="#" onclick="sortTasks('completed')">✅ Сначала выполненные</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="sortTasks('incomplete')">❌ Сначала невыполненные</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTasks('completed')">✅ Сначала
+                                выполненные</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTasks('incomplete')">❌ Сначала
+                                невыполненные</a></li>
                         </ul>
                     </div>
                 </h3>
                 <!-- Блок для отображения уровня и XP -->
-                <div id="levelInfo" class="mb-3 text-light">
-                    Загрузка уровня...
+                <div id="levelInfo" class="alert alert-dark d-flex justify-content-between align-items-center">
+                    <span id="levelText" >Уровень: ...</span>
+                    <span id="xpText">XP: ...</span>
+                    <span id="nextLevelText">До след. уровня: ... XP</span>
                 </div>
+
                 <!-- Поле поиска задач -->
                 <input type="text" id="searchInput" placeholder="Поиск задач..." class="form-control mb-3">
                 <!-- Список задач с внутренним скроллингом -->
@@ -81,22 +92,21 @@
         </div>
 
         <!-- Вторая колонка -->
-        <div class="col-md-4">
+        <div class="col-md-8">
             <div class="p-3 bg-secondary rounded">
-                <h3>Контейнер 2</h3>
-                <p>Содержание второго контейнера.</p>
+                <h3 class="mb-3">Ваше место в рейтинге</h3>
+                <div style="height: 250px;">
+                    <canvas id="rankingChart"></canvas>
+                </div>
+                <p class="text-center text-muted small mt-2">Топ-9 пользователей по XP</p>
             </div>
         </div>
 
-        <!-- Третья колонка -->
-        <div class="col-md-4">
-            <div class="p-3 bg-secondary rounded">
-                <h3>Контейнер 3</h3>
-                <p>Содержание третьего контейнера.</p>
-            </div>
-        </div>
     </div>
 </div>
+
+<!-- Подключаем Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Подключение Bootstrap -->
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
