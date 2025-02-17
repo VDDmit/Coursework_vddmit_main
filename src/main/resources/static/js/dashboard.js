@@ -155,3 +155,87 @@ function renderTasks(tasksArray) {
         taskContainer.appendChild(taskItem);
     });
 }
+
+// Глобальная переменная для хранения графика
+let rankingChart = null;
+
+// Функция загрузки данных для диаграммы рейтинга
+async function loadRankingChart() {
+    try {
+        const response = await fetchWithAuth("/api/users/me_in_top_list");
+        if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
+
+        const topUsers = await response.json();
+
+        // Преобразуем данные для диаграммы
+        const labels = topUsers.map(user => user.user.username);
+        const xpData = topUsers.map(user => user.user.xp);
+        const ranks = topUsers.map(user => `#${user.rank}`);
+
+        // Отрисовываем диаграмму
+        renderRankingChart(labels, xpData, ranks);
+
+    } catch (error) {
+        console.error("Ошибка загрузки рейтинга:", error);
+    }
+}
+
+// Функция отрисовки диаграммы с рейтингом
+function renderRankingChart(labels, xpData, ranks) {
+    const ctx = document.getElementById("rankingChart").getContext("2d");
+
+    // Удаляем предыдущий график, если он уже существует
+    if (rankingChart instanceof Chart) {
+        rankingChart.destroy();
+    }
+
+    rankingChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "XP",
+                data: xpData,
+                backgroundColor: labels.map(name =>
+                    name === document.getElementById("username").textContent ? "#ffcc00" : "#007bff"
+                ),
+                borderColor: "#fff",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    ticks: {
+                        color: "black" // Цвет чисел на оси X
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: "black" // Цвет чисел на оси Y
+                    },
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "black" // Цвет текста легенды
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return `${ranks[context.dataIndex]} - ${context.raw} XP`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Загружаем диаграмму при загрузке страницы
+document.addEventListener("DOMContentLoaded", loadRankingChart);
