@@ -51,7 +51,7 @@ public class RoleInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("adminPassword"))
                     .role(adminRole)
                     .lvl(1)
-                    .xp(4999)
+                    .xp(999)
                     .build();
 
             appUserRepository.save(adminUser);
