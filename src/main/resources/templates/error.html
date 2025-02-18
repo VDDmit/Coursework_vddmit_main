@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ошибка</title>
+    <link rel="stylesheet" th:href="@{/css/dark-theme.css}">
+    <style>
+        body {
+            text-align: center;
+            background-color: #1e1e1e;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        .error-container {
+            margin-top: 50px;
+        }
+
+        .error-code {
+            font-size: 100px;
+            font-weight: bold;
+        }
+
+        .error-message {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <div class="error-code" th:text="${status}">Ошибка</div>
+    <div class="error-message">
+        <p>Упс! Что-то пошло не так.</p>
+        <p th:text="${error}">Страница недоступна</p>
+        <a href="/dashboard" class="btn btn-primary">Вернуться на главную</a>
+    </div>
+</div>
+</body>
+</html>
