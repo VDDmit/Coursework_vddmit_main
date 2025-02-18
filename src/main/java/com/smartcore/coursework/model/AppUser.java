@@ -48,4 +48,17 @@ public class AppUser {
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    @Override
+    public String toString() {
+        return "AppUser{" +
+                "id='" + id + '\'' +
+                ", lvl=" + lvl +
+                ", xp=" + xp +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                // избегаем рекурсии с team и role
+                ", role=" + (role != null ? role.getName() : "null") +
+                '}';
+    }
 }

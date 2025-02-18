@@ -1,9 +1,7 @@
 package com.smartcore.coursework.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +21,19 @@ public class Team {
 
     @Column(length = 255)
     private String name;
+
+    @OneToOne
+    @JoinColumn(name = "leader_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private AppUser leader;
+
+    @Override
+    public String toString() {
+        return "Team{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                // избегаем рекурсии с leader
+                ", leader=" + (leader != null ? leader.getUsername() : "null") +
+                '}';
+    }
 }
