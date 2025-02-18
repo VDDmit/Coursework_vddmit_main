@@ -83,7 +83,7 @@
                 </div>
 
                 <!-- Поле поиска задач -->
-                <input type="text" id="searchInput" placeholder="Поиск задач..." class="form-control mb-3">
+                <label for="searchInput"></label><input type="text" id="searchInput" placeholder="Поиск задач..." class="form-control mb-3">
                 <!-- Список задач с внутренним скроллингом -->
                 <div class="list-group" id="taskList" style="max-height: 400px; overflow-y: auto;">
                     <p class="text-secondary">Загрузка задач...</p>
@@ -113,6 +113,7 @@
 <!-- Скрипты -->
 <script th:src="@{/js/auth.js}"></script>
 <script th:src="@{/js/dashboard.js}"></script>
+<script th:src="@{/js/mini-user-in-navbar.js}"></script>
 <script th:src="@{/js/check-token-redirect-to-login.js}"></script>
 </body>
 </html>

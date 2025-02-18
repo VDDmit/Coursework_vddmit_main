@@ -1,11 +1,15 @@
 document.addEventListener("DOMContentLoaded", async function () {
     console.log("Проверяем аутентификацию...");
 
-    const isAuthenticated = await checkAuth();
-    if (!isAuthenticated) {
-        console.warn("Пользователь не авторизован, редирект на /login");
-        window.location.href = "/login";
-    }
+    checkAuth().then(isAuthenticated => {
+        if (!isAuthenticated) {
+            console.warn("Пользователь не авторизован, редирект на /login");
+            window.location.href = "/login";
+        } else {
+            console.log("Пользователь авторизован, загружаем интерфейс...");
+            loadUser(); // Загружаем юзера только после проверки авторизации
+        }
+    });
 });
 
 /** Проверка, авторизован ли пользователь */
