@@ -23,7 +23,8 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link fs-5 px-3" href="/teams">Команды</a>
@@ -34,22 +35,28 @@
                 <li class="nav-item">
                     <a class="nav-link fs-5 px-3" href="/tasks">Задачи</a>
                 </li>
-                <!-- Профиль пользователя -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle d-flex align-items-center fs-5 px-3" href="#" id="userDropdown"
-                       data-bs-toggle="dropdown">
-                        <img id="userAvatar" src="/img/avatar-default.png" alt="Аватар" class="rounded-circle"
-                             width="32" height="32">
-                        <span id="username" class="ms-2">Загрузка...</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/profile">Профиль</a></li>
-                        <li><a class="dropdown-item" href="/my_team">Моя команда</a></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Выход</a></li>
-                    </ul>
+                <li class="nav-item">
+                    <a class="nav-link fs-5 px-3" href="/rewords">Награды</a>
                 </li>
             </ul>
         </div>
+
+        <!-- Профиль пользователя справа -->
+        <ul class="navbar-nav d-flex align-items-center ms-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center fs-5 px-3" href="#" id="userDropdown"
+                   data-bs-toggle="dropdown">
+                    <img id="userAvatar" src="/img/avatar-default.png" alt="Аватар" class="rounded-circle"
+                         width="32" height="32">
+                    <span id="username" class="ms-2">Загрузка...</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="/profile">Профиль</a></li>
+                    <li><a class="dropdown-item" href="/my_team">Моя команда</a></li>
+                    <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Выход</a></li>
+                </ul>
+            </li>
+        </ul>
     </div>
 </nav>
 
