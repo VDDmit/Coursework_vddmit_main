@@ -24,11 +24,14 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("Task Tracker API")
                         .version("1.1.0")
-                        .description("API documentation for Task Tracker, providing endpoints for task and project management.")
+                        .description("""
+                                API documentation for Task Tracker, providing endpoints for task and project management.
+                                
+                                [🔙 Вернуться на сайт](http://localhost:8080/dashboard)
+                                """)
                         .contact(new Contact()
                                 .name("SmartCore Support")
-                                .email("danvoropaeff@yandex.ru")
-                                .url("https://smartcore.com"))
+                                .email("danvoropaeff@yandex.ru"))
                         .license(new License()
                                 .name("Apache 2.0")
                                 .url("https://www.apache.org/licenses/LICENSE-2.0")));
