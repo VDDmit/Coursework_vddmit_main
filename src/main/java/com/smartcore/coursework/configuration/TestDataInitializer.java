@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -22,75 +21,34 @@ class TestDataInitializer {
     private final PasswordEncoder passwordEncoder;
     private final TeamRepository teamRepository;
 
-
     AppUser initializeUsers() {
-        Role adminRole = roleRepository.findByName("ADMIN")
-                .orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
-        Role moderatorRole = roleRepository.findByName("MODERATOR")
-                .orElseThrow(() -> new RuntimeException("Role MODERATOR not found"));
-        Role userRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new RuntimeException("Role USER not found"));
+        Role adminRole = roleRepository.findByName("ADMIN").orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
+        Role moderatorRole = roleRepository.findByName("MODERATOR").orElseThrow(() -> new RuntimeException("Role MODERATOR not found"));
+        Role userRole = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role USER not found"));
 
-        AppUser adminUser = appUserRepository.findByUsername("admin").orElse(null);
-        if (adminUser == null) {
-            adminUser = AppUser.builder()
-                    .username("admin")
-                    .email("admin@example.com")
-                    .password(passwordEncoder.encode("adminPassword"))
-                    .role(adminRole)
-                    .lvl(1)
-                    .xp(999)
-                    .build();
-            appUserRepository.save(adminUser);
-            log.info("Admin user created.");
-        }
-
-        if (!appUserRepository.existsByUsername("moderator")) {
-            appUserRepository.save(AppUser.builder()
-                    .username("moderator")
-                    .email("moderator@example.com")
-                    .password(passwordEncoder.encode("moderatorPassword"))
-                    .role(moderatorRole)
-                    .lvl(5)
-                    .xp(4111)
-                    .build());
-            log.info("Moderator user created.");
-        }
-
-        if (!appUserRepository.existsByUsername("user1")) {
-            appUserRepository.save(AppUser.builder()
-                    .username("user1")
-                    .email("user1@example.com")
-                    .password(passwordEncoder.encode("user1Password"))
-                    .role(userRole)
-                    .lvl(2)
-                    .xp(1004)
-                    .build());
-        }
-
-        if (!appUserRepository.existsByUsername("user2")) {
-            appUserRepository.save(AppUser.builder()
-                    .username("user2")
-                    .email("user2@example.com")
-                    .password(passwordEncoder.encode("user2Password"))
-                    .role(userRole)
-                    .lvl(3)
-                    .xp(3004)
-                    .build());
-        }
-
-        if (!appUserRepository.existsByUsername("user3")) {
-            appUserRepository.save(AppUser.builder()
-                    .username("user3")
-                    .email("user3@example.com")
-                    .password(passwordEncoder.encode("user3Password"))
-                    .role(userRole)
-                    .lvl(1)
-                    .xp(300)
-                    .build());
-        }
+        AppUser adminUser = createUserIfNotExists("admin", "admin@example.com", "adminPassword", adminRole, 1, 999);
+        createUserIfNotExists("moderator", "moderator@example.com", "moderatorPassword", moderatorRole, 5, 4111);
+        createUserIfNotExists("user1", "user1@example.com", "user1Password", userRole, 2, 1004);
+        createUserIfNotExists("user2", "user2@example.com", "user2Password", userRole, 3, 3004);
+        createUserIfNotExists("user3", "user3@example.com", "user3Password", userRole, 1, 300);
 
         return adminUser;
+    }
+
+    private AppUser createUserIfNotExists(String username, String email, String password, Role role, int lvl, int xp) {
+        return appUserRepository.findByUsername(username).orElseGet(() -> {
+            AppUser user = AppUser.builder()
+                    .username(username)
+                    .email(email)
+                    .password(passwordEncoder.encode(password))
+                    .role(role)
+                    .lvl(lvl)
+                    .xp(xp)
+                    .build();
+            appUserRepository.save(user);
+            log.info("Created user: {}", username);
+            return user;
+        });
     }
 
     void initializeProjectsAndTasks(AppUser adminUser) {
@@ -101,70 +59,52 @@ class TestDataInitializer {
 
         // Создание проектов
         List<Project> projects = List.of(
-                Project.builder().name("Project 1").description("This is the first project").owner(adminUser).build(),
-                Project.builder().name("Project 2").description("This is the second project").owner(adminUser).build(),
-                Project.builder().name("Project 3").description("This is the third project").owner(adminUser).build(),
-                Project.builder().name("Project 4").description("This is the fourth project").owner(adminUser).build()
+                createProjectIfNotExists("Project 1", "This is the first project", adminUser),
+                createProjectIfNotExists("Project 2", "This is the second project", adminUser),
+                createProjectIfNotExists("Project 3", "This is the third project", adminUser),
+                createProjectIfNotExists("Project 4", "This is the fourth project", adminUser)
         );
-
-        projectRepository.saveAll(projects);
-        log.info("Projects created successfully.");
 
         // Создание задач для админа
-        List<Task> tasks = List.of(
-                Task.builder().title("Task 1 for Project 1").description("Studying sorting algorithms is important for optimizing application performance and efficiency.").completed(false).assignedUser(adminUser).project(projects.get(0)).xp(50).build(),
-                Task.builder().title("Task 2 for Project 1").description("This is the second task in Project 1").completed(true).assignedUser(adminUser).project(projects.get(0)).xp(100).build(),
-                Task.builder().title("Task 1 for Project 2").description("This is the first task in Project 2").completed(false).assignedUser(adminUser).project(projects.get(1)).xp(30).build(),
-                Task.builder().title("Task 2 for Project 2").description("This is the second task in Project 2").completed(false).assignedUser(adminUser).project(projects.get(1)).xp(70).build(),
-                Task.builder().title("Task 1 for Project 3").description("This is the first task in Project 3").completed(false).assignedUser(adminUser).project(projects.get(2)).xp(80).build(),
-                Task.builder().title("Task 2 for Project 3").description("This is the second task in Project 3").completed(true).assignedUser(adminUser).project(projects.get(2)).xp(120).build(),
-                Task.builder().title("Task 1 for Project 4").description("This is the first task in Project 4").completed(false).assignedUser(adminUser).project(projects.get(3)).xp(60).build(),
-                Task.builder().title("Task 2 for Project 4").description("This is the second task in Project 4").completed(false).assignedUser(adminUser).project(projects.get(3)).xp(90).build()
-        );
+        createTaskIfNotExists("Task 1 for Project 1", "Sorting algorithms...", false, adminUser, projects.get(0), 50);
+        createTaskIfNotExists("Task 2 for Project 1", "Second task in Project 1", true, adminUser, projects.get(0), 100);
+        createTaskIfNotExists("Task 1 for Project 2", "First task in Project 2", false, adminUser, projects.get(1), 30);
+        createTaskIfNotExists("Task 2 for Project 2", "Second task in Project 2", false, adminUser, projects.get(1), 70);
+        createTaskIfNotExists("Task 1 for Project 3", "First task in Project 3", false, adminUser, projects.get(2), 80);
+        createTaskIfNotExists("Task 2 for Project 3", "Second task in Project 3", true, adminUser, projects.get(2), 120);
+        createTaskIfNotExists("Task 1 for Project 4", "First task in Project 4", false, adminUser, projects.get(3), 60);
+        createTaskIfNotExists("Task 2 for Project 4", "Second task in Project 4", false, adminUser, projects.get(3), 90);
+    }
 
-        taskRepository.saveAll(tasks);
-        log.info("Tasks for admin created successfully.");
+    private Project createProjectIfNotExists(String name, String description, AppUser owner) {
+        return projectRepository.findByName(name).orElseGet(() -> {
+            Project project = Project.builder()
+                    .name(name)
+                    .description(description)
+                    .owner(owner)
+                    .build();
+            projectRepository.save(project);
+            log.info("Created project: {}", name);
+            return project;
+        });
+    }
 
-        // Создание задач для других пользователей
-        List<AppUser> users = List.of(
-                Objects.requireNonNull(appUserRepository.findByUsername("moderator").orElse(null)),
-                Objects.requireNonNull(appUserRepository.findByUsername("user1").orElse(null)),
-                Objects.requireNonNull(appUserRepository.findByUsername("user2").orElse(null)),
-                Objects.requireNonNull(appUserRepository.findByUsername("user3").orElse(null))
-        );
-
-        for (AppUser user : users) {
-            if (user != null) {
-                taskRepository.save(Task.builder()
-                        .title("Task 1 for Project 1 - " + user.getUsername())
-                        .description("Task for " + user.getUsername() + " in Project 1")
-                        .completed(false)
-                        .assignedUser(user)
-                        .project(projects.get(0))
-                        .xp(50)
-                        .build());
-
-                taskRepository.save(Task.builder()
-                        .title("Task 2 for Project 2 - " + user.getUsername())
-                        .description("Task for " + user.getUsername() + " in Project 2")
-                        .completed(true)
-                        .assignedUser(user)
-                        .project(projects.get(1))
-                        .xp(70)
-                        .build());
-            }
+    private void createTaskIfNotExists(String title, String description, boolean completed, AppUser user, Project project, int xp) {
+        if (!taskRepository.existsByTitleAndProject(title, project)) {
+            Task task = Task.builder()
+                    .title(title)
+                    .description(description)
+                    .completed(completed)
+                    .assignedUser(user)
+                    .project(project)
+                    .xp(xp)
+                    .build();
+            taskRepository.save(task);
+            log.info("Created task: {}", title);
         }
-
-        log.info("Tasks for users created successfully.");
     }
 
     void initializeTeams() {
-        if (teamRepository.count() > 0) {
-            log.info("Teams are already initialized.");
-            return;
-        }
-
-        // Получаем всех админов и модераторов для лидеров команд
         List<AppUser> leaders = appUserRepository.findAll()
                 .stream()
                 .filter(user -> user.getRole().getName().equals("ADMIN") || user.getRole().getName().equals("MODERATOR"))
@@ -176,39 +116,37 @@ class TestDataInitializer {
                 .toList();
 
         if (leaders.isEmpty()) {
-            log.warn("No eligible leaders found (ADMIN or MODERATOR). Skipping team initialization.");
+            log.warn("No eligible leaders found. Skipping team initialization.");
             return;
         }
 
-        // Создаем команды
-        List<Team> teams = leaders.stream()
-                .map(leader -> Team.builder()
+        for (AppUser leader : leaders) {
+            Team team = teamRepository.findByName("Team " + leader.getUsername()).orElseGet(() -> {
+                Team newTeam = Team.builder()
                         .name("Team " + leader.getUsername())
-                        .leader(leader)  // Указываем лидера команды
-                        .build())
-                .toList();
+                        .leader(leader)
+                        .build();
+                teamRepository.save(newTeam);
+                log.info("Created team: {}", newTeam.getName());
+                return newTeam;
+            });
 
-        teamRepository.saveAll(teams);
-        log.info("Teams with leaders initialized successfully.");
-
-        // Назначаем лидеров их же командам
-        for (Team team : teams) {
-            AppUser leader = team.getLeader();
-            leader.setTeam(team);
-            appUserRepository.save(leader);
-            log.info("Leader {} assigned to their own team {}", leader.getUsername(), team.getName());
+            if (leader.getTeam() == null) {
+                leader.setTeam(team);
+                appUserRepository.save(leader);
+                log.info("Assigned {} as leader to {}", leader.getUsername(), team.getName());
+            }
         }
 
-        // Распределяем пользователей по командам
+        List<Team> teams = teamRepository.findAll();
         for (int i = 0; i < users.size(); i++) {
-            Team team = teams.get(i % teams.size()); // равномерное распределение
             AppUser user = users.get(i);
-            user.setTeam(team);
-            appUserRepository.save(user);
-            log.info("User {} assigned to team {}", user.getUsername(), team.getName());
+            if (user.getTeam() == null) {
+                Team team = teams.get(i % teams.size());
+                user.setTeam(team);
+                appUserRepository.save(user);
+                log.info("Assigned {} to {}", user.getUsername(), team.getName());
+            }
         }
-
-        log.info("All users have been assigned to teams.");
     }
-
 }
