@@ -26,11 +26,14 @@ class TestDataInitializer {
         Role moderatorRole = roleRepository.findByName("MODERATOR").orElseThrow(() -> new RuntimeException("Role MODERATOR not found"));
         Role userRole = roleRepository.findByName("USER").orElseThrow(() -> new RuntimeException("Role USER not found"));
 
-        AppUser adminUser = createUserIfNotExists("admin", "admin@example.com", "adminPassword", adminRole, 1, 999);
+        AppUser adminUser = createUserIfNotExists("admin", "admin@example.com", "adminPassword", adminRole, 9, 8999);
         createUserIfNotExists("moderator", "moderator@example.com", "moderatorPassword", moderatorRole, 5, 4111);
         createUserIfNotExists("user1", "user1@example.com", "user1Password", userRole, 2, 1004);
         createUserIfNotExists("user2", "user2@example.com", "user2Password", userRole, 3, 3004);
         createUserIfNotExists("user3", "user3@example.com", "user3Password", userRole, 1, 300);
+        createUserIfNotExists("user4", "user4@example.com", "user4Password", userRole, 3, 3453);
+        createUserIfNotExists("user5", "user5@example.com", "user5Password", userRole, 3, 3555);
+        createUserIfNotExists("user6", "user6@example.com", "user6Password", userRole, 6, 5555);
 
         return adminUser;
     }
