@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -34,6 +35,21 @@ public class AppUsersController {
         AppUser currentUser = appUserAndTokenService.getAppUserByUsername(username);
         log.info("Current user retrieved: {}", currentUser);
         return ResponseEntity.ok(currentUser);
+    }
+
+
+    @Operation(
+            summary = "Get the list of users without team",
+            description = "Returns the list of AppUsers without team. Access Level: LOW"
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @GetMapping("/list-users-without-team")
+    public ResponseEntity<List<AppUser>> getUsersWithoutTeam() {
+        List<AppUser> appUserWithoutTeamList = appUserAndTokenService.getAllAppUsers().stream()
+                .filter(appUser -> appUser.getTeam() == null)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(appUserWithoutTeamList);
     }
 
     @Operation(
