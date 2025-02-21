@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +21,8 @@ class TestDataInitializer {
     private final TaskRepository taskRepository;
     private final PasswordEncoder passwordEncoder;
     private final TeamRepository teamRepository;
+
+    private final Set<String> testUsernames = Set.of("admin", "moderator", "user1", "user2", "user3", "user4", "user5", "user6");
 
     AppUser initializeUsers() {
         Role adminRole = roleRepository.findByName("ADMIN").orElseThrow(() -> new RuntimeException("Role ADMIN not found"));
@@ -108,14 +111,13 @@ class TestDataInitializer {
     }
 
     void initializeTeams() {
-        List<AppUser> leaders = appUserRepository.findAll()
-                .stream()
-                .filter(user -> user.getRole().getName().equals("ADMIN") || user.getRole().getName().equals("MODERATOR"))
+        List<AppUser> leaders = appUserRepository.findAll().stream()
+                .filter(user -> testUsernames.contains(user.getUsername()) &&
+                        (user.getRole().getName().equals("ADMIN") || user.getRole().getName().equals("MODERATOR")))
                 .toList();
 
-        List<AppUser> users = appUserRepository.findAll()
-                .stream()
-                .filter(user -> user.getRole().getName().equals("USER"))
+        List<AppUser> testUsers = appUserRepository.findAll().stream()
+                .filter(user -> testUsernames.contains(user.getUsername()) && user.getRole().getName().equals("USER"))
                 .toList();
 
         if (leaders.isEmpty()) {
@@ -142,8 +144,8 @@ class TestDataInitializer {
         }
 
         List<Team> teams = teamRepository.findAll();
-        for (int i = 0; i < users.size(); i++) {
-            AppUser user = users.get(i);
+        for (int i = 0; i < testUsers.size(); i++) {
+            AppUser user = testUsers.get(i);
             if (user.getTeam() == null) {
                 Team team = teams.get(i % teams.size());
                 user.setTeam(team);
