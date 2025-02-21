@@ -34,14 +34,14 @@ public class AuthService {
         validateInput(roleName, "Role name");
 
         if (appUserRepository.existsByUsername(username)) {
-            throw new IllegalArgumentException("User with username " + username + " already exists in " + ClassUtils.getClassAndMethodName());
+            throw new IllegalArgumentException("User with username " + username + " already exists");
         }
         if (appUserRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("User with email " + email + " already exists in " + ClassUtils.getClassAndMethodName());
+            throw new IllegalArgumentException("User with email " + email + " already exists");
         }
 
         Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new EntityNotFoundException("Role " + roleName + " not found in " + ClassUtils.getClassAndMethodName()));
+                .orElseThrow(() -> new EntityNotFoundException("Role " + roleName + " not found"));
 
         AppUser appUser = AppUser.builder()
                 .username(username)
