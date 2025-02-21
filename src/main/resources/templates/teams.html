@@ -74,6 +74,12 @@
     <!-- Карточки команд -->
     <div id="teams-container" class="row g-4"></div>
 
+    <!-- Пользователи без команды -->
+    <div id="users-without-team" class="mt-4">
+        <h2>Пользователи без команды</h2>
+        <div id="users-list"></div>
+    </div>
+
     <!-- График активности -->
     <div class="card p-4 mt-5 reveal">
         <h2>Активность</h2>
@@ -131,6 +137,28 @@
         </div>
     </div>
 </div>
+
+<!-- Модальное окно добавления пользователя в команду -->
+<div class="modal fade" id="teamSelectModal" tabindex="-1" aria-labelledby="teamSelectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header">
+                <h5 class="modal-title" id="teamSelectModalLabel">Выберите команду</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <select class="form-select bg-dark text-light border-secondary" id="teamSelect">
+                    <option selected disabled>Выберите команду</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="confirmAssign">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Подключаем Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
