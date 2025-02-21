@@ -1,6 +1,7 @@
 package com.smartcore.coursework.service;
 
 import com.smartcore.coursework.dto.TeamWithMembersDTO;
+import com.smartcore.coursework.dto.UserDTO;
 import com.smartcore.coursework.exception.EntityNotFoundException;
 import com.smartcore.coursework.model.AppUser;
 import com.smartcore.coursework.model.Team;
@@ -70,19 +71,21 @@ public class TeamService {
     public List<TeamWithMembersDTO> getAllTeamsWithMembers() {
         List<Team> teams = getAllTeams();
         List<AppUser> appUsers = appUserRepository.findAll();
-        if (appUsers.isEmpty()) {
-            throw new EntityNotFoundException("No users found in " + ClassUtils.getClassAndMethodName());
-        }
 
-        return teams.stream()
-                .map(team -> new TeamWithMembersDTO(
-                        team,
-                        appUsers.stream()
-                                .filter(appUser -> team.equals(appUser.getTeam()))
-                                .collect(Collectors.toList())
-                ))
-                .collect(Collectors.toList());
+        return teams.stream().map(team -> {
+            UserDTO leaderDTO = team.getLeader() != null
+                    ? new UserDTO(team.getLeader().getId(), team.getLeader().getUsername(), team.getLeader().getLvl(), team.getLeader().getXp())
+                    : null;
+
+            List<UserDTO> membersDTO = appUsers.stream()
+                    .filter(user -> team.equals(user.getTeam()))
+                    .map(user -> new UserDTO(user.getId(), user.getUsername(), user.getLvl(), user.getXp()))
+                    .collect(Collectors.toList());
+
+            return new TeamWithMembersDTO(leaderDTO, team, membersDTO);
+        }).collect(Collectors.toList());
     }
+
 
     public Team getTeamById(String id) {
         validateTeamId(id);

@@ -1,6 +1,5 @@
 package com.smartcore.coursework.dto;
 
-import com.smartcore.coursework.model.AppUser;
 import com.smartcore.coursework.model.Team;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TeamWithMembersDTO {
+    UserDTO leader;
     private Team team;
-    private List<AppUser> members;
+    private List<UserDTO> members;
 }
