@@ -50,6 +50,10 @@
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li><a class="dropdown-item" href="/profile">Профиль</a></li>
                     <li><a class="dropdown-item" href="/my_team">Моя команда</a></li>
+                    <li>
+                        <a class="dropdown-item text-warning" href="#" data-access-level="HIGH"
+                           onclick="openRegisterModal()">Зарегистрировать пользователя</a>
+                    </li>
                     <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Выход</a></li>
                 </ul>
             </li>
@@ -64,7 +68,8 @@
 
 
     <!-- Поле поиска -->
-    <input type="text" id="search" class="form-control mb-4" placeholder="Поиск команды по любым ключевым словам..." oninput="searchTeams()">
+    <input type="text" id="search" class="form-control mb-4" placeholder="Поиск команды по любым ключевым словам..."
+           oninput="searchTeams()">
 
     <!-- Карточки команд -->
     <div id="teams-container" class="row g-4"></div>
@@ -88,6 +93,45 @@
     </div>
 </div>
 
+<!-- Модальное окно регистрации -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-light text-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="registerModalLabel">Регистрация пользователя</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="reg-username" class="form-label">Ник пользователя</label>
+                    <input type="text" class="form-control" id="reg-username" required>
+                </div>
+                <div class="mb-3">
+                    <label for="reg-email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="reg-email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="reg-password" class="form-label">Пароль</label>
+                    <input type="password" class="form-control" id="reg-password" required>
+                </div>
+                <div class="mb-3">
+                    <label for="reg-role" class="form-label">Роль</label>
+                    <select class="form-select" id="reg-role">
+                        <option value="USER">Пользователь</option>
+                        <option value="MODERATOR">Модератор</option>
+                        <option value="ADMIN">Администратор</option>
+                    </select>
+                </div>
+                <div id="reg-error" class="text-danger"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" onclick="registerUser()">Зарегистрировать</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Подключаем Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -99,6 +143,6 @@
 <script th:src="@{/js/check-token-redirect-to-login.js}"></script>
 <script th:src="@{/js/mini-user-in-navbar.js}"></script>
 <script th:src="@{/js/teams.js}"></script>
-
+<script th:src="@{/js/register-app-user.js}"></script>
 </body>
 </html>
