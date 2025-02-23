@@ -8,6 +8,7 @@ import com.smartcore.coursework.model.Team;
 import com.smartcore.coursework.repository.AppUserRepository;
 import com.smartcore.coursework.repository.TeamRepository;
 import com.smartcore.coursework.util.ClassUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +67,20 @@ public class TeamService {
             throw new IllegalArgumentException("Team cannot be null in " + ClassUtils.getClassAndMethodName());
         }
         return teamRepository.save(team);
+    }
+
+    @Transactional
+    public Team createTeamWithLeader(String name, AppUser leader) {
+        if (leader == null) {
+            throw new IllegalArgumentException("Команда должна иметь лидера");
+        }
+
+        Team team = Team.builder().name(name).leader(leader).build();
+        Team createdTeam = teamRepository.save(team);
+
+        addUserToTeam(leader.getUsername(), createdTeam.getId());
+
+        return createdTeam;
     }
 
     public List<TeamWithMembersDTO> getAllTeamsWithMembers() {

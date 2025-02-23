@@ -1,11 +1,15 @@
 package com.smartcore.coursework.controller.api;
 
+import com.smartcore.coursework.dto.CreateTeamDTO;
 import com.smartcore.coursework.dto.TeamWithMembersDTO;
+import com.smartcore.coursework.model.AppUser;
 import com.smartcore.coursework.model.Team;
+import com.smartcore.coursework.repository.AppUserRepository;
 import com.smartcore.coursework.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +26,7 @@ import java.util.List;
 public class TeamController {
 
     private final TeamService teamService;
+    private final AppUserRepository appUserRepository;
 
     @Operation(
             summary = "Get a list of all teams",
@@ -55,12 +60,17 @@ public class TeamController {
     )
     @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
     @PostMapping
-    public ResponseEntity<Team> createTeam(@RequestBody Team team) {
-        log.info("Creating new team: {}", team);
-        Team createdTeam = teamService.save(team);
+    @Transactional
+    public ResponseEntity<Team> createTeam(@RequestBody CreateTeamDTO createTeamDTO) {
+        AppUser leader = appUserRepository.findById(createTeamDTO.getLeaderId())
+                .orElseThrow(() -> new IllegalArgumentException("Лидер не найден"));
+
+        Team createdTeam = teamService.createTeamWithLeader(createTeamDTO.getName(), leader);
+
         log.info("New team created: {}", createdTeam);
         return ResponseEntity.ok(createdTeam);
     }
+
 
     @Operation(
             summary = "Update a team",
