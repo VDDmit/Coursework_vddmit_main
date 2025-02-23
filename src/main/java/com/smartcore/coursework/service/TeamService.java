@@ -109,14 +109,19 @@ public class TeamService {
                 .orElseThrow(() -> new EntityNotFoundException("Team not found with ID: " + id + " in " + ClassUtils.getClassAndMethodName()));
     }
 
+    @Transactional
     public void deleteTeamById(String id) {
-        validateTeamId(id);
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Team not found"));
 
-        if (!teamRepository.existsById(id)) {
-            throw new EntityNotFoundException("Team with ID " + id + " not found in " + ClassUtils.getClassAndMethodName());
+        List<AppUser> usersInTeam = appUserRepository.findByTeamId(id);
+
+        for (AppUser user : usersInTeam) {
+            user.setTeam(null);
+            appUserRepository.save(user);
         }
 
-        teamRepository.deleteById(id);
+        teamRepository.delete(team);
     }
 
     private void validateTeamId(String id) {

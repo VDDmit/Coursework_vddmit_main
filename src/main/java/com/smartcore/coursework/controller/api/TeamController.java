@@ -5,6 +5,7 @@ import com.smartcore.coursework.dto.TeamWithMembersDTO;
 import com.smartcore.coursework.model.AppUser;
 import com.smartcore.coursework.model.Team;
 import com.smartcore.coursework.repository.AppUserRepository;
+import com.smartcore.coursework.repository.TeamRepository;
 import com.smartcore.coursework.service.TeamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,6 +28,7 @@ public class TeamController {
 
     private final TeamService teamService;
     private final AppUserRepository appUserRepository;
+    private final TeamRepository teamRepository;
 
     @Operation(
             summary = "Get a list of all teams",
@@ -133,10 +135,18 @@ public class TeamController {
             summary = "Delete a team",
             description = "Deletes a team by its ID. Access Level: HIGH"
     )
+    @Transactional
     @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).HIGH)")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTeam(@PathVariable String id) {
         log.info("Deleting team with ID: {}", id);
+        Team team = teamRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Team not found"));
+        AppUser leader = team.getLeader();
+        if (leader != null) {
+            leader.setTeam(null);
+            appUserRepository.save(leader);
+        }
         teamService.deleteTeamById(id);
         log.info("Team with ID: {} has been deleted", id);
         return ResponseEntity.ok("Team deleted successfully.");

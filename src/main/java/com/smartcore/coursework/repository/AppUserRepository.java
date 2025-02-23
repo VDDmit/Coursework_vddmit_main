@@ -4,6 +4,7 @@ import com.smartcore.coursework.model.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -17,4 +18,6 @@ public interface AppUserRepository extends JpaRepository<AppUser, String> {
     boolean existsByEmail(String email);
 
     Optional<AppUser> findAppUserById(String userId);
+
+    List<AppUser> findByTeamId(String teamId);
 }
