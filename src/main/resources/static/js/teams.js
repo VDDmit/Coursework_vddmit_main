@@ -55,7 +55,7 @@ let editMode = false;
 
 function editTeams() {
     editMode = !editMode; // Переключаем режим редактирования
-    document.querySelectorAll(".delete-user-btn").forEach(btn => {
+    document.querySelectorAll(".delete-btn-for-admin").forEach(btn => {
         btn.classList.toggle("hidden", !editMode); // Показываем/скрываем кнопки удаления
     });
 }
@@ -68,14 +68,23 @@ function createTeamCard(teamData) {
     card.innerHTML = `
         <div class="card bg-dark text-light border-secondary">
             <div class="card-body">
-                <h5 class="card-title">${teamData.team.name} <span class="text-muted">(ID: ${teamData.team.id})</span></h5>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        ${teamData.team.name} <span class="text-muted">(ID: ${teamData.team.id})</span>
+                    </h5>
+                    <button class="delete-btn-for-admin btn btn-danger btn-sm hidden" onclick="deleteTeam('${teamData.team.id}')">Удалить команду</button>
+                </div>
                 <p class="card-text"><strong>Лидер:</strong> ${teamData.leader ? teamData.leader.username : "Нет лидера"}</p>
                 <h6>Участники:</h6>
                 <ul class="list-group list-group-flush">
                     ${teamData.members.map(member =>
-        `<li class="list-group-item bg-dark text-light" id="user-${member.id}">
-                        ${member.username} (XP: ${member.xp}, LVL: ${member.lvl})
-                        <button class="delete-user-btn btn btn-danger btn-sm hidden" onclick="removeUserFromTeam('${teamData.team.id}', '${member.username}')">Удалить</button>
+        `<li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center" id="user-${member.id}">
+                        <span>${member.username} (XP: ${member.xp}, LVL: ${member.lvl})</span>
+                        <button class="delete-btn-for-admin btn btn-danger btn-sm hidden p-0 d-flex align-items-center justify-content-center" 
+                                style="width: 20px; height: 20px; border-radius: 4px;" 
+                                onclick="removeUserFromTeam('${teamData.team.id}', '${member.username}')">
+                            <span style="font-size: 12px;">-</span>
+                        </button>
                     </li>`)
         .join("") || `<li class="list-group-item bg-dark text-muted">Нет участников</li>`}
                 </ul>
@@ -177,6 +186,20 @@ function searchTeams() {
     const query = document.getElementById("search").value.toLowerCase();
     document.querySelectorAll("#teams-container .col-md-6").forEach(card => {
         card.style.display = card.textContent.toLowerCase().includes(query) ? "block" : "none";
+    });
+}
+
+function searchWithoutTeamUsers() {
+    const query = document.getElementById("search-without-team-user").value.toLowerCase();
+    const userCards = document.querySelectorAll("#users-list .card");
+
+    userCards.forEach(card => {
+        const cardText = card.textContent.toLowerCase();
+        if (cardText.includes(query)) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
     });
 }
 

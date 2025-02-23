@@ -77,18 +77,15 @@
     </div>
 
     <!-- Карточки команд -->
-    <div id="teams-container" class="row g-4"></div>
-
+    <div id="teams-container" class="d-flex flex-nowrap overflow-auto" style="gap: 16px;"></div>
     <!-- Пользователи без команды -->
     <div id="users-without-team" class="mt-4">
-        <h2>Пользователи без команды</h2>
-        <div id="users-list"></div>
-    </div>
-
-    <!-- График активности -->
-    <div class="card p-4 mt-5 reveal">
-        <h2>Активность</h2>
-        <canvas id="activityChart"></canvas>
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="mb-0">Пользователи без команды</h2>
+            <input type="text" id="search-without-team-user" class="form-control w-auto" placeholder="Поиск пользователя..."
+                   oninput="searchWithoutTeamUsers()">
+        </div>
+        <div id="users-list" class="mt-4 overflow-auto" style="max-height: 300px;"></div>
     </div>
 
     <!-- Топ-5 команд -->
