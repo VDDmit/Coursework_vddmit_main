@@ -51,6 +51,16 @@ function displayUsersWithoutTeam(users) {
     });
 }
 
+let editMode = false;
+
+function editTeams() {
+    editMode = !editMode; // Переключаем режим редактирования
+    document.querySelectorAll(".delete-user-btn").forEach(btn => {
+        btn.classList.toggle("hidden", !editMode); // Показываем/скрываем кнопки удаления
+    });
+}
+
+
 /**Вспомогательные функции для создания элементов DOM*/
 function createTeamCard(teamData) {
     const card = document.createElement("div");
@@ -62,7 +72,12 @@ function createTeamCard(teamData) {
                 <p class="card-text"><strong>Лидер:</strong> ${teamData.leader ? teamData.leader.username : "Нет лидера"}</p>
                 <h6>Участники:</h6>
                 <ul class="list-group list-group-flush">
-                    ${teamData.members.map(member => `<li class="list-group-item bg-dark text-light">${member.username} (XP: ${member.xp}, LVL: ${member.lvl})</li>`).join("") || `<li class="list-group-item bg-dark text-muted">Нет участников</li>`}
+                    ${teamData.members.map(member =>
+        `<li class="list-group-item bg-dark text-light" id="user-${member.id}">
+                        ${member.username} (XP: ${member.xp}, LVL: ${member.lvl})
+                        <button class="delete-user-btn btn btn-danger btn-sm hidden" onclick="removeUserFromTeam('${teamData.team.id}', '${member.username}')">Удалить</button>
+                    </li>`)
+        .join("") || `<li class="list-group-item bg-dark text-muted">Нет участников</li>`}
                 </ul>
             </div>
         </div>`;
