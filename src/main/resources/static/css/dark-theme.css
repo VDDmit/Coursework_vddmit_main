@@ -1,8 +1,8 @@
-/* Общие стили */
+/* Основной фон */
 body {
-    background-color: #0a0a0a;
-    color: #e0e0e0;
+    background-color: #1E272E; /* Темный фон */
     font-family: 'Inter', sans-serif;
+    color: #ecf0f1;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,46 +10,51 @@ body {
     margin: 0;
     padding: 20px;
 }
+.hidden {
+    display: none !important;
+}
 
 /* Контейнер */
 .container {
     max-width: 100%;
-    width: 450px; /* Увеличил ширину */
+    width: 450px;
 }
 
 /* Карточка */
-.card {
-    background: linear-gradient(145deg, #111111, #1c1c1c);
-    border-radius: 12px;
+.card, .project-card {
+    background: linear-gradient(145deg, #2c3e50, #34495e);
+    border-radius: 15px;
     padding: 35px;
-    box-shadow: 0 4px 20px rgba(0, 255, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
     width: 100%;
+    text-align: center;
+    color: #fff;
 }
 
-.card:hover {
-    box-shadow: 0 6px 30px rgba(0, 255, 255, 0.4);
+.card:hover, .project-card:hover {
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+    transform: translateY(-10px);
 }
 
-/* Заголовок */
-h2 {
-    /*text-align: center;*/
+.card h2, .project-card h5 {
+    font-size: 1.5rem;
     font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
+    color: #f1c40f;
     text-transform: uppercase;
     letter-spacing: 2px;
-    color: #00eaff;
 }
 
-h1 {
-    text-align: left;
-    font-size: 50px;
-    color: #e0e0e0;
+.card p, .project-card p {
+    font-size: 1rem;
+    color: #ecf0f1;
+    margin-bottom: 1.5rem;
 }
 
 /* Поля ввода */
 .form-control {
-    background: #161616;
+    background: linear-gradient(145deg, #2c3e50, #34495e);
     border: 1px solid #2a2a2a;
     color: #ffffff;
     border-radius: 8px;
@@ -60,14 +65,9 @@ h1 {
 }
 
 .form-control:focus {
-    background: #1e1e1e;
-    border-color: #00eaff;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-}
-
-/* Увеличенный отступ между полем пароля и кнопкой */
-.mb-4 {
-    margin-bottom: 28px;
+    background: #b3a4a4;
+    border-color: #f1c40f;
+    box-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
 }
 
 /* Кнопка */
@@ -81,9 +81,9 @@ h1 {
     border-radius: 8px;
     transition: all 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 255, 255, 0.2);
-    width: 200px; /* Фиксированная ширина */
+    width: 200px;
     display: block;
-    margin: 0 auto; /* Центрируем кнопку */
+    margin: 0 auto;
     text-align: center;
 }
 
@@ -92,22 +92,11 @@ h1 {
     box-shadow: 0 6px 15px rgba(0, 255, 255, 0.5);
 }
 
-/* Для мобильных устройств */
-@media (max-width: 480px) {
-    .container {
-        width: 100%;
-    }
-
-    .card {
-        padding: 25px;
-    }
-}
-
 /* Анимация появления */
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
@@ -115,6 +104,6 @@ h1 {
     }
 }
 
-.card {
+.card, .project-card {
     animation: fadeIn 0.8s ease-out;
 }

@@ -1,5 +1,6 @@
 package com.smartcore.coursework.controller.api;
 
+import com.smartcore.coursework.dto.ProjectWithMembersDTO;
 import com.smartcore.coursework.model.Project;
 import com.smartcore.coursework.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +37,19 @@ public class ProjectController {
         List<Project> projects = projectService.getProjectsByUserId(userId);
         log.info("Fetched {} projects for userId: {}", projects.size(), userId);
         return ResponseEntity.ok(projects);
+    }
+
+    @Operation(
+            summary = "Get all projects with their members",
+            description = "Retrieve all projects along with their members and the project owner."
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @GetMapping("/with-members")
+    public ResponseEntity<List<ProjectWithMembersDTO>> getAllProjectsWithMembers() {
+        log.info("Fetching all projects with their members");
+        List<ProjectWithMembersDTO> projectsWithMembers = projectService.getAllProjectsWithMembers();
+        log.info("Fetched {} projects with their members", projectsWithMembers.size());
+        return ResponseEntity.ok(projectsWithMembers);
     }
 
     @Operation(

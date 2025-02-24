@@ -1,13 +1,3 @@
-/* Основной фон */
-body {
-    background-color: #1E272E; /* Темный фон */
-    font-family: 'Inter', sans-serif;
-    color: #ecf0f1;
-}
-.hidden {
-    display: none !important;
-}
-
 /* Стили для карточек проектов */
 .project-card {
     background: linear-gradient(145deg, #2c3e50, #34495e);
@@ -16,8 +6,6 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
-    padding: 20px;
-    text-align: center;
     color: #fff;
 }
 
@@ -39,7 +27,6 @@ body {
     margin-bottom: 1.5rem;
 }
 
-/* Список участников */
 .project-card ul {
     list-style: none;
     padding: 0;
@@ -66,17 +53,14 @@ body {
     align-items: center;
 }
 
-/* Стрелки переключения */
 .swiper-button-next,
 .swiper-button-prev {
     color: #f1c40f !important;
 }
 
-/* Пагинация */
 .swiper-pagination-bullet {
     background: #f1c40f !important;
 }
-
 /* Анимация появления карточек */
 @keyframes fadeIn {
     from {
@@ -91,34 +75,4 @@ body {
 
 .swiper-slide {
     animation: fadeIn 0.5s ease-in-out;
-}
-
-/* Стили для навбара */
-.navbar {
-    background-color: #2C3E50;
-    border-bottom: 2px solid #f1c40f;
-}
-
-.navbar .navbar-brand {
-    color: #f1c40f;
-    font-weight: bold;
-}
-
-.navbar-nav .nav-link {
-    color: #ecf0f1;
-}
-
-.navbar-nav .nav-link:hover {
-    color: #f1c40f;
-}
-
-/* Футер */
-footer {
-    background-color: #2C3E50;
-    padding: 20px 0;
-    text-align: center;
-}
-
-footer p {
-    color: #ecf0f1;
 }

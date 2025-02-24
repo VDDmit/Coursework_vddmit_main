@@ -1,5 +1,7 @@
 package com.smartcore.coursework.service;
 
+import com.smartcore.coursework.dto.ProjectWithMembersDTO;
+import com.smartcore.coursework.dto.UserDTO;
 import com.smartcore.coursework.exception.AccessDeniedException;
 import com.smartcore.coursework.exception.EntityNotFoundException;
 import com.smartcore.coursework.model.*;
@@ -11,7 +13,10 @@ import com.smartcore.coursework.util.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +54,34 @@ public class ProjectService {
         userProjectRepository.save(userProject);
 
         return savedProject;
+    }
+
+    public List<Project> getAllProjects() {
+        return projectRepository.findAll();
+    }
+
+    public List<ProjectWithMembersDTO> getAllProjectsWithMembers() {
+        List<Project> projects = getAllProjects();
+        List<UserProject> userProjects = userProjectRepository.findAll();
+
+        Map<String, List<UserDTO>> projectMembersMap = userProjects.stream()
+                .collect(Collectors.groupingBy(
+                        userProject -> userProject.getProject().getId(),
+                        Collectors.mapping(userProject -> {
+                            AppUser user = userProject.getUser();
+                            return new UserDTO(user.getId(), user.getUsername(), user.getLvl(), user.getXp());
+                        }, Collectors.toList())
+                ));
+
+        return projects.stream().map(project -> {
+            UserDTO ownerDTO = project.getOwner() != null
+                    ? new UserDTO(project.getOwner().getId(), project.getOwner().getUsername(), project.getOwner().getLvl(), project.getOwner().getXp())
+                    : null;
+
+            List<UserDTO> membersDTO = projectMembersMap.getOrDefault(project.getId(), new ArrayList<>());
+
+            return new ProjectWithMembersDTO(project.getId(), project.getName(), project.getDescription(), ownerDTO, membersDTO);
+        }).toList();
     }
 
     public void addUserToProject(String username, String projectId) {

@@ -12,6 +12,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- Кастомные стили -->
     <link rel="stylesheet" th:href="@{/css/dashboard-styles.css}">
+    <link rel="stylesheet" th:href="@{/css/projects-styles.css}">
+
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 </head>
 <body class="bg-dark text-light">
 
@@ -60,6 +69,21 @@
     </div>
 </nav>
 
+<!-- Секция для проектов -->
+<div class="container my-5">
+    <h2>Проекты</h2>
+    <div id="projectsCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper" id="projects-container">
+                <!-- Проекты будут вставляться сюда -->
+            </div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+</div>
+
 </body>
 <!-- Подключение Bootstrap -->
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
@@ -67,6 +91,7 @@
 <script th:src="@{/js/auth.js}"></script>
 <script th:src="@{/js/check-token-redirect-to-login.js}"></script>
 <script th:src="@{/js/mini-user-in-navbar.js}"></script>
-<script th:src="@{/js/teams.js}"></script>
 <script th:src="@{/js/register-app-user.js}"></script>
+<script th:src="@{/js/projects.js}"></script>
+
 </html>
