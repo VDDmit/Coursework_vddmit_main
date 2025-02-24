@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 async function initializeApp() {
     await loadTeams();
+    await loadTopTeams();
     await loadUsersWithoutTeam();
     setupEventListeners();
 }
@@ -253,4 +254,72 @@ function createTeam() {
         .catch(error => {
             errorDiv.textContent = error.message || "Ошибка создания команды";
         });
+}
+
+async function loadTopTeams() {
+    try {
+        const response = await fetchWithAuth("/api/teams/top_teams/5");
+        if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
+        const topTeams = await response.json();
+        displayTopTeamsChart(topTeams);
+    } catch (error) {
+        console.error("Ошибка при загрузке топ-команд:", error);
+    }
+}
+
+function displayTopTeamsChart(teams) {
+    const ctx = document.getElementById("topTeamsChart").getContext("2d");
+
+    if (window.topTeamsChartInstance) {
+        window.topTeamsChartInstance.destroy();
+    }
+
+    const labels = teams.map(team => team.team.name);
+    const teamXP = teams.map(team => team.members.reduce((sum, member) => sum + member.xp, team.leader.xp));
+    const leaderXP = teams.map(team => team.leader.xp);
+
+    window.topTeamsChartInstance = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    type: "bar",
+                    label: "XP лидера",
+                    data: leaderXP,
+                    backgroundColor: "rgba(255, 99, 132, 0.7)",
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 1
+                },
+                {
+                    type: "line",
+                    label: "Общий XP команды",
+                    data: teamXP,
+                    borderColor: "rgba(54, 162, 235, 1)",
+                    backgroundColor: "rgba(54, 162, 235, 0.2)",
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    pointBackgroundColor: "rgba(54, 162, 235, 1)",
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return `${tooltipItem.dataset.label}: ${tooltipItem.raw} XP`;
+                        }
+                    }
+                }
+            }
+        }
+    });
 }

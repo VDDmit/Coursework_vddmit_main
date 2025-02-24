@@ -1,5 +1,6 @@
 package com.smartcore.coursework.service;
 
+import com.smartcore.coursework.dto.TeamWithMembersAndTotalXpDTO;
 import com.smartcore.coursework.dto.TeamWithMembersDTO;
 import com.smartcore.coursework.dto.UserDTO;
 import com.smartcore.coursework.exception.EntityNotFoundException;
@@ -12,6 +13,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -128,5 +131,34 @@ public class TeamService {
         if (id == null || id.isEmpty()) {
             throw new IllegalArgumentException("Team ID cannot be null or empty in " + ClassUtils.getClassAndMethodName());
         }
+    }
+
+    public List<TeamWithMembersAndTotalXpDTO> getTopTeams(int count) {
+        List<Team> teams = getAllTeams();
+        List<TeamWithMembersAndTotalXpDTO> teamDTOList = new ArrayList<>();
+
+        for (Team team : teams) {
+            List<AppUser> members = appUserRepository.findByTeamId(team.getId());
+            AppUser leader = team.getLeader();
+            UserDTO leaderDTO = leader != null ?
+                    new UserDTO(leader.getId(), leader.getUsername(), leader.getLvl(), leader.getXp()) : null;
+
+            // Фильтруем участников, исключая лидера, если он есть среди участников
+            List<UserDTO> membersDTO = members.stream()
+                    .filter(member -> leader == null || !member.getId().equals(leader.getId()))
+                    .map(member -> new UserDTO(member.getId(), member.getUsername(), member.getLvl(), member.getXp()))
+                    .collect(Collectors.toList());
+
+            // Рассчитываем общий XP команды
+            int totalXp = (leader != null ? leader.getXp() : 0) + membersDTO.stream().mapToInt(UserDTO::getXp).sum();
+
+            teamDTOList.add(new TeamWithMembersAndTotalXpDTO(leaderDTO, team, membersDTO, totalXp));
+        }
+
+        // Сортируем по убыванию totalXp
+        teamDTOList.sort(Comparator.comparingInt(TeamWithMembersAndTotalXpDTO::getTotalXp).reversed());
+
+        // Ограничиваем список count командами
+        return teamDTOList.stream().limit(count).collect(Collectors.toList());
     }
 }

@@ -82,7 +82,8 @@
     <div id="users-without-team" class="mt-4">
         <div class="d-flex justify-content-between align-items-center">
             <h2 class="mb-0">Пользователи без команды</h2>
-            <input type="text" id="search-without-team-user" class="form-control w-auto" placeholder="Поиск пользователя..."
+            <input type="text" id="search-without-team-user" class="form-control w-auto"
+                   placeholder="Поиск пользователя..."
                    oninput="searchWithoutTeamUsers()">
         </div>
         <div id="users-list" class="mt-4 overflow-auto" style="max-height: 300px;"></div>
@@ -90,8 +91,8 @@
 
     <!-- Топ-5 команд -->
     <div class="card p-4 mt-5 reveal">
-        <h2>Топ 5 команд</h2>
-        <ul id="top-teams" class="list-group"></ul>
+        <h2>Топ 5 команд — Аналитика</h2>
+        <canvas id="topTeamsChart" width="400" height="200"></canvas>
     </div>
 </div>
 

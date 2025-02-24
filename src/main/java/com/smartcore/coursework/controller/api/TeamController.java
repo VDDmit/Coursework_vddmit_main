@@ -1,6 +1,7 @@
 package com.smartcore.coursework.controller.api;
 
 import com.smartcore.coursework.dto.CreateTeamDTO;
+import com.smartcore.coursework.dto.TeamWithMembersAndTotalXpDTO;
 import com.smartcore.coursework.dto.TeamWithMembersDTO;
 import com.smartcore.coursework.model.AppUser;
 import com.smartcore.coursework.model.Team;
@@ -111,6 +112,20 @@ public class TeamController {
 
         return ResponseEntity.ok("User added to team successfully.");
     }
+
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @Operation(
+            summary = "Get the top teams in the total number of experience",
+            description = "Returns a list of top commands sorted in decreasing the total number of experience (XP). The number of commands is set by the Count parameter."
+    )
+    @GetMapping("/top_teams/{count}")
+    public ResponseEntity<List<TeamWithMembersAndTotalXpDTO>> getTopTeams(
+            @Parameter(description = "The number of top commands for obtaining", required = true)
+            @PathVariable int count) {
+        List<TeamWithMembersAndTotalXpDTO> topTeams = teamService.getTopTeams(count);
+        return ResponseEntity.ok(topTeams);
+    }
+
 
     @Operation(
             summary = "Remove a user from a team",
