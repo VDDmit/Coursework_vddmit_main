@@ -16,36 +16,85 @@
 
     <style>
         body {
-            background-color: #1e1e1e;
-            color: #fff;
+            background-color: #1E272E;
             font-family: 'Inter', sans-serif;
+            color: #ecf0f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .error-container {
+            background: linear-gradient(145deg, #2c3e50, #34495e);
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            text-align: center;
+            color: #fff;
+            max-width: 500px;
+        }
+
+        .error-container:hover {
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+            transform: translateY(-10px);
         }
 
         .error-code {
             font-size: 120px;
             font-weight: bold;
             line-height: 1;
+            color: #f1c40f;
         }
 
         .error-message {
             font-size: 20px;
-            max-width: 500px;
+            margin-bottom: 20px;
         }
 
         .btn-primary {
-            background-color: #007bff;
+            background: linear-gradient(90deg, #00c6ff, #0072ff);
             border: none;
-            transition: 0.3s ease;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 255, 255, 0.2);
+            width: 200px;
+            display: block;
+            margin: 0 auto;
+            text-align: center;
         }
 
         .btn-primary:hover {
-            background-color: #0056b3;
+            background: linear-gradient(90deg, #0072ff, #00c6ff);
+            box-shadow: 0 6px 15px rgba(0, 255, 255, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-container {
+            animation: fadeIn 0.8s ease-out;
         }
     </style>
 </head>
 <body>
-
-<div class="d-flex flex-column align-items-center justify-content-center vh-100 text-center">
+<div class="error-container">
     <div class="error-code" th:text="${status}">Ошибка</div>
     <div class="error-message">
         <p>Упс! Что-то пошло не так.</p>
@@ -53,6 +102,5 @@
         <a href="/dashboard" class="btn btn-primary mt-3 px-4 py-2">Вернуться на главную</a>
     </div>
 </div>
-
 </body>
 </html>
