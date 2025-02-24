@@ -21,6 +21,7 @@ class TestDataInitializer {
     private final TaskRepository taskRepository;
     private final PasswordEncoder passwordEncoder;
     private final TeamRepository teamRepository;
+    private final UserProjectRepository userProjectRepository;
 
     private final Set<String> testUsernames = Set.of("admin", "moderator", "user1", "user2", "user3", "user4", "user5", "user6");
 
@@ -80,7 +81,33 @@ class TestDataInitializer {
         createTaskIfNotExists("Task 2 for Project 3", "Second task in Project 3", true, adminUser, projects.get(2), 120);
         createTaskIfNotExists("Task 1 for Project 4", "First task in Project 4", false, adminUser, projects.get(3), 60);
         createTaskIfNotExists("Task 2 for Project 4", "Second task in Project 4", false, adminUser, projects.get(3), 90);
+
+        // Добавляем пользователей на проекты
+        addUsersToProjects(projects);
     }
+
+    private void addUsersToProjects(List<Project> projects) {
+        List<AppUser> testUsers = appUserRepository.findAll().stream()
+                .filter(user -> testUsernames.contains(user.getUsername())
+                        && user.getRole().getName().equals("USER")
+                        || user.getRole().getName().equals("MODERATOR"))
+                .toList();
+
+        // Разбиваем пользователей по проектам
+        for (int i = 0; i < testUsers.size(); i++) {
+            AppUser user = testUsers.get(i);
+            Project project = projects.get(i % projects.size()); // Назначаем проект по кругу
+            if (!userProjectRepository.existsByUserAndProject(user, project)) {
+                UserProject userProject = UserProject.builder()
+                        .user(user)
+                        .project(project)
+                        .build();
+                userProjectRepository.save(userProject);
+                log.info("Assigned user {} to project {}", user.getUsername(), project.getName());
+            }
+        }
+    }
+
 
     private Project createProjectIfNotExists(String name, String description, AppUser owner) {
         return projectRepository.findByName(name).orElseGet(() -> {
@@ -89,6 +116,7 @@ class TestDataInitializer {
                     .description(description)
                     .owner(owner)
                     .build();
+
             projectRepository.save(project);
             log.info("Created project: {}", name);
             return project;
