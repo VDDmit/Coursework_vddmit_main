@@ -1,28 +1,38 @@
-/** Загружает уровень доступа текущего пользователя и ися в мини-профиль */
+/**
+ * Загружает данные текущего пользователя, обновляет мини-профиль и проверяет уровень доступа для скрытия кнопок.
+ */
 async function loadUser() {
     try {
+        // Загружаем данные текущего пользователя
         const response = await fetchWithAuth("/api/users/me");
         if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
         const user = await response.json();
 
-        // Определяем уровень доступа
-        const accessLevels = ["LOW", "MEDIUM", "HIGH"];
-        const userAccessLevel = user.role.accessLevel; // "HIGH", "MEDIUM" или "LOW"
-        const userAccessIndex = accessLevels.indexOf(userAccessLevel);
+        // Обновляем мини-профиль в навбаре
+        document.getElementById("username").textContent = user.username;
+        if (user.avatarUrl) {
+            document.getElementById("userAvatar").src = user.avatarUrl;
+        }
 
-        // Скрываем кнопки, если у пользователя недостаточно прав
+        // Получаем уровень доступа пользователя
+        const userAccessLevel = user.role.accessLevel.trim().toUpperCase(); // Приводим к верхнему регистру
+
+        console.log("Уровень доступа пользователя:", userAccessLevel); // Отладка
+
+        // Проверяем уровень доступа для всех элементов с атрибутом data-access-level
         document.querySelectorAll("[data-access-level]").forEach(button => {
-            const requiredAccess = button.getAttribute("data-access-level");
-            const requiredIndex = accessLevels.indexOf(requiredAccess);
-            if (userAccessIndex < requiredIndex) {
+            const requiredLevels = button.getAttribute("data-access-level")
+                .split(",") // Разделяем уровни доступа, если их несколько
+                .map(level => level.trim().toUpperCase()); // Приводим к верхнему регистру
+
+            console.log(`Кнопка: ${button.textContent}, Требуемые уровни: ${requiredLevels.join(", ")}`);
+
+            // Если уровень пользователя не соответствует ни одному из требуемых, скрываем кнопку
+            if (!requiredLevels.includes(userAccessLevel)) {
                 button.style.display = "none";
             }
         });
-
-        // Обновляем имя пользователя в шапке
-        document.getElementById("username").textContent = user.username;
     } catch (error) {
-        console.error("Ошибка при загрузке данных пользователя:", error);
+        console.error("Ошибка при загрузке данных пользователя или проверке уровня доступа:", error);
     }
 }
-

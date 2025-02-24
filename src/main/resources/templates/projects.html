@@ -84,6 +84,15 @@
     </div>
 </div>
 
+
+<!-- Панель для администратора -->
+<div id="admin-buttons" class="mt-4 mb-4  reveal">
+    <button class="btn btn-primary me-3" data-access-level="MEDIUM,HIGH" onclick="createProject()">Создать проект</button>
+    <button class="btn btn-warning me-3" data-access-level="MEDIUM,HIGH" onclick="editProject()">Редактировать проект</button>
+    <button class="btn btn-primary" data-access-level="HIGH" onclick="deleteProject()">Удалить проект</button>
+</div>
+
+
 </body>
 <!-- Подключение Bootstrap -->
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
