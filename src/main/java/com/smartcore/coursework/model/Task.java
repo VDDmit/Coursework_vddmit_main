@@ -20,8 +20,9 @@ public class Task {
     private String id;
 
     @NotNull
-    @Column(nullable = false)
-    private Boolean completed;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private TaskStatus status;
 
     @ManyToOne
     @JoinColumn(name = "assigned_user_id")

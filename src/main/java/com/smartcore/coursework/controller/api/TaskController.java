@@ -1,6 +1,7 @@
 package com.smartcore.coursework.controller.api;
 
 import com.smartcore.coursework.model.Task;
+import com.smartcore.coursework.model.TaskStatus;
 import com.smartcore.coursework.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,6 +36,29 @@ public class TaskController {
         log.info("Fetched {} tasks for user: {}", tasks.size(), username);
         return ResponseEntity.ok(tasks);
     }
+
+    @Operation(
+            summary = "Change task status",
+            description = "Changes the status of a task. If the task is marked as DONE, the assigned user gains XP. If the task is reverted from DONE, XP is deducted. Requires MEDIUM access level."
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).MEDIUM)")
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<String> changeTaskStatus(
+            @Parameter(description = "The ID of the task to update", required = true)
+            @PathVariable("id") String taskId,
+            @Parameter(description = "The new status for the task", required = true)
+            @RequestParam("status") TaskStatus newStatus) {
+        log.info("Attempting to change status of task with ID: {} to {}", taskId, newStatus);
+        try {
+            taskService.changeTaskStatus(taskId, newStatus);
+            log.info("Task status updated successfully: {} -> {}", taskId, newStatus);
+            return ResponseEntity.ok("Task status updated successfully.");
+        } catch (Exception e) {
+            log.error("Error while updating task status for ID: {}: {}", taskId, e.getMessage());
+            return ResponseEntity.status(400).body("Failed to update task status. " + e.getMessage());
+        }
+    }
+
 
     @Operation(
             summary = "Get all tasks for a project",
@@ -102,7 +126,7 @@ public class TaskController {
         }
         existingTask.setTitle(updatedTask.getTitle());
         existingTask.setDescription(updatedTask.getDescription());
-        existingTask.setCompleted(updatedTask.getCompleted());
+        existingTask.setStatus(updatedTask.getStatus());
         existingTask.setAssignedUser(updatedTask.getAssignedUser());
         existingTask.setProject(updatedTask.getProject());
         Task savedTask = taskService.save(existingTask);
@@ -125,43 +149,4 @@ public class TaskController {
         return ResponseEntity.ok("Task deleted successfully.");
     }
 
-    @Operation(
-            summary = "Mark a task as completed",
-            description = "Marks a specific task as completed by setting its 'completed' field to true. Requires MEDIUM access level."
-    )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).MEDIUM)")
-    @PatchMapping("/{id}/complete")
-    public ResponseEntity<String> markTaskAsCompleted(
-            @Parameter(description = "The ID of the task to mark as completed", required = true)
-            @PathVariable("id") String taskId) {
-        log.info("Attempting to mark task with ID: {} as completed", taskId);
-        try {
-            taskService.markTaskAsComplete(taskId);
-            log.info("Task with ID: {} successfully marked as completed", taskId);
-            return ResponseEntity.ok("Task marked as completed.");
-        } catch (Exception e) {
-            log.error("Error while marking task with ID: {} as completed: {}", taskId, e.getMessage());
-            return ResponseEntity.status(400).body("Failed to mark task as completed. " + e.getMessage());
-        }
-    }
-
-    @Operation(
-            summary = "Mark a task as incomplete",
-            description = "Marks a specific task as incomplete by setting its 'completed' field to false. Requires MEDIUM access level."
-    )
-    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).MEDIUM)")
-    @PatchMapping("/{id}/incomplete")
-    public ResponseEntity<String> markTaskAsIncomplete(
-            @Parameter(description = "The ID of the task to mark as incomplete", required = true)
-            @PathVariable("id") String taskId) {
-        log.info("Attempting to mark task with ID: {} as incomplete", taskId);
-        try {
-            taskService.markTaskAsIncomplete(taskId);
-            log.info("Task with ID: {} successfully marked as incomplete", taskId);
-            return ResponseEntity.ok("Task marked as incomplete.");
-        } catch (Exception e) {
-            log.error("Error while marking task with ID: {} as incomplete: {}", taskId, e.getMessage());
-            return ResponseEntity.status(400).body("Failed to mark task as incomplete. " + e.getMessage());
-        }
-    }
 }

@@ -73,14 +73,14 @@ class TestDataInitializer {
         );
 
         // Создание задач для админа
-        createTaskIfNotExists("Task 1 for Project 1", "Sorting algorithms...", false, adminUser, projects.get(0), 50);
-        createTaskIfNotExists("Task 2 for Project 1", "Second task in Project 1", true, adminUser, projects.get(0), 100);
-        createTaskIfNotExists("Task 1 for Project 2", "First task in Project 2", false, adminUser, projects.get(1), 30);
-        createTaskIfNotExists("Task 2 for Project 2", "Second task in Project 2", false, adminUser, projects.get(1), 70);
-        createTaskIfNotExists("Task 1 for Project 3", "First task in Project 3", false, adminUser, projects.get(2), 80);
-        createTaskIfNotExists("Task 2 for Project 3", "Second task in Project 3", true, adminUser, projects.get(2), 120);
-        createTaskIfNotExists("Task 1 for Project 4", "First task in Project 4", false, adminUser, projects.get(3), 60);
-        createTaskIfNotExists("Task 2 for Project 4", "Second task in Project 4", false, adminUser, projects.get(3), 90);
+        createTaskIfNotExists("Task 1 for Project 1", "Sorting algorithms...", TaskStatus.TODO, adminUser, projects.get(0), 50);
+        createTaskIfNotExists("Task 2 for Project 1", "Second task in Project 1", TaskStatus.IN_PROGRESS, adminUser, projects.get(0), 100);
+        createTaskIfNotExists("Task 1 for Project 2", "First task in Project 2", TaskStatus.IN_PROGRESS, adminUser, projects.get(1), 30);
+        createTaskIfNotExists("Task 2 for Project 2", "Second task in Project 2", TaskStatus.IN_PROGRESS, adminUser, projects.get(1), 70);
+        createTaskIfNotExists("Task 1 for Project 3", "First task in Project 3", TaskStatus.DONE, adminUser, projects.get(2), 80);
+        createTaskIfNotExists("Task 2 for Project 3", "Second task in Project 3", TaskStatus.IN_REVIEW, adminUser, projects.get(2), 120);
+        createTaskIfNotExists("Task 1 for Project 4", "First task in Project 4", TaskStatus.TODO, adminUser, projects.get(3), 60);
+        createTaskIfNotExists("Task 2 for Project 4", "Second task in Project 4", TaskStatus.TODO, adminUser, projects.get(3), 90);
 
         // Добавляем пользователей на проекты
         addUsersToProjects(projects);
@@ -123,12 +123,12 @@ class TestDataInitializer {
         });
     }
 
-    private void createTaskIfNotExists(String title, String description, boolean completed, AppUser user, Project project, int xp) {
+    private void createTaskIfNotExists(String title, String description, TaskStatus taskStatus, AppUser user, Project project, int xp) {
         if (!taskRepository.existsByTitleAndProject(title, project)) {
             Task task = Task.builder()
                     .title(title)
                     .description(description)
-                    .completed(completed)
+                    .status(taskStatus)
                     .assignedUser(user)
                     .project(project)
                     .xp(xp)

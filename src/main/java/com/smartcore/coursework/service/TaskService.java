@@ -1,11 +1,12 @@
 package com.smartcore.coursework.service;
 
 import com.smartcore.coursework.exception.EntityNotFoundException;
-import com.smartcore.coursework.model.AppUser;
 import com.smartcore.coursework.model.Task;
+import com.smartcore.coursework.model.TaskStatus;
 import com.smartcore.coursework.repository.AppUserRepository;
 import com.smartcore.coursework.repository.TaskRepository;
 import com.smartcore.coursework.util.ClassUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final AppUserAndTokenService appUserService;
     private final AppUserRepository appUserRepository;
 
     public List<Task> getTasksByAssignedUserUsername(String userName) {
@@ -61,38 +63,26 @@ public class TaskService {
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with ID: " + taskId + " in " + ClassUtils.getClassAndMethodName()));
     }
 
-    public void markTaskAsComplete(String taskId) {
-        Task receivedTask = getTaskById(taskId);
+    @Transactional
+    public void changeTaskStatus(String taskId, TaskStatus newStatus) {
+        Task task = getTaskById(taskId);
+        TaskStatus oldStatus = task.getStatus();
 
-        if (!receivedTask.getCompleted()) {
-            receivedTask.setCompleted(true);
-            updateUserXp(receivedTask, receivedTask.getXp());
-            taskRepository.save(receivedTask);
+        if (oldStatus == newStatus) {
+            return; // Ничего не делаем, если статус не изменился
         }
-    }
 
-    public void markTaskAsIncomplete(String taskId) {
-        Task receivedTask = getTaskById(taskId);
+        task.setStatus(newStatus);
 
-        if (receivedTask.getCompleted()) {
-            receivedTask.setCompleted(false);
-            updateUserXp(receivedTask, -receivedTask.getXp());
-            taskRepository.save(receivedTask);
-        }
-    }
-
-    private void updateUserXp(Task task, int xpChange) {
-        AppUser assignedUser = task.getAssignedUser();
-
-        if (assignedUser != null) {
-            assignedUser.setXp(assignedUser.getXp() + xpChange);
-            if (assignedUser.getXp() < 0) {
-                assignedUser.setXp(0);
+        if (task.getAssignedUser() != null) {
+            if (oldStatus == TaskStatus.DONE) {
+                appUserService.changeTheLvl(task.getAssignedUser(), -task.getXp());
+            } else if (newStatus == TaskStatus.DONE) {
+                appUserService.changeTheLvl(task.getAssignedUser(), task.getXp());
             }
-            log.info("User {} updated xp to {}, Total XP: {}",
-                    assignedUser.getId(), xpChange, assignedUser.getXp());
-            appUserRepository.save(assignedUser);
         }
+
+        taskRepository.save(task);
     }
 
     private void validateUserExistence(String userName) {

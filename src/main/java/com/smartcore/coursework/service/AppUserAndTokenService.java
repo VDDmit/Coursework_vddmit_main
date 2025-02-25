@@ -57,11 +57,11 @@ public class AppUserAndTokenService {
     }
 
 
-    public void changeTheLvl(AppUser appUser, int toChangeSoManyLvlUnits) {
+    void changeTheLvl(AppUser appUser, int addingXp) {
         if (appUser == null) {
             throw new IllegalArgumentException("AppUser cannot be null in " + ClassUtils.getClassAndMethodName());
         }
-        int newXp = appUser.getXp() + toChangeSoManyLvlUnits;
+        int newXp = appUser.getXp() + addingXp;
         appUser.setXp(newXp);
 
         int newLevel = calculateLevelFromXp(newXp);
