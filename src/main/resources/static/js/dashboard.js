@@ -27,22 +27,6 @@ async function updateUserLevelInfo() {
 }
 
 
-// Функция обновления XP и уровня пользователя
-async function updateUserXP(xpAmount) {
-    try {
-        const response = await fetchWithAuth(`/api/users/update-xp?xp=${xpAmount}`, { method: "POST" });
-        if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
-        const user = await response.json();
-
-        // Обновляем блок с информацией о уровне
-        document.getElementById("levelInfo").innerHTML =
-            `Уровень: ${user.lvl} | XP: ${user.xp} | До след. уровня: ${user.lvl * 1000 - user.xp} XP`;
-
-    } catch (error) {
-        console.warn("Ошибка обновления XP:", error);
-    }
-}
-
 // Глобальный массив для хранения задач
 let tasks = [];
 
@@ -60,12 +44,18 @@ async function loadTasks() {
 
 // Функция сортировки задач
 function sortTasks(type) {
-    if (type === "completed") {
+    if (type === "done") {
         // Сначала выполненные задачи
-        tasks.sort((a, b) => b.completed - a.completed);
-    } else if (type === "incomplete") {
-        // Сначала невыполненные задачи
-        tasks.sort((a, b) => a.completed - b.completed);
+        tasks.sort((a, b) => (b.status === "DONE") - (a.status === "DONE"));
+    } else if (type === "inProgress") {
+        // Сначала задачи в процессе
+        tasks.sort((a, b) => (b.status === "IN_PROGRESS") - (a.status === "IN_PROGRESS"));
+    } else if (type === "inReview") {
+        // Сначала задачи на проверке
+        tasks.sort((a, b) => (b.status === "IN_REVIEW") - (a.status === "IN_REVIEW"));
+    } else if (type === "todo") {
+        // Сначала задачи в списке TODO
+        tasks.sort((a, b) => (b.status === "TODO") - (a.status === "TODO"));
     }
     renderTasks(tasks);
 }
@@ -84,7 +74,23 @@ function initializeSearch() {
     });
 }
 
-// Отображение списка задач с полной информацией
+// Функция получения цвета и иконки для статуса
+function getStatusBadge(status) {
+    switch (status) {
+        case "TODO":
+            return '<span class="badge bg-secondary px-2 py-1">📌 TODO</span>';
+        case "IN_PROGRESS":
+            return '<span class="badge bg-warning text-dark px-2 py-1">⏳ В работе</span>';
+        case "IN_REVIEW":
+            return '<span class="badge bg-info text-dark px-2 py-1">🧐 На проверке</span>';
+        case "DONE":
+            return '<span class="badge bg-success px-2 py-1">✅ Выполнена</span>';
+        default:
+            return '<span class="badge bg-light text-dark px-2 py-1">❓ Неизвестно</span>';
+    }
+}
+
+// Отображение списка задач
 function renderTasks(tasksArray) {
     const taskContainer = document.getElementById("taskList");
     taskContainer.innerHTML = ""; // Очистка контейнера
@@ -108,9 +114,7 @@ function renderTasks(tasksArray) {
         );
 
         // Определяем статус задачи
-        const status = task.completed
-            ? '<span class="badge bg-success px-2 py-1">✅ Выполнена</span>'
-            : '<span class="badge bg-warning text-dark px-2 py-1">⏳ В работе</span>';
+        const statusBadge = getStatusBadge(task.status);
 
         // Обрезка длинного описания
         const description = task.description && task.description.length > 50
@@ -130,7 +134,7 @@ function renderTasks(tasksArray) {
         taskItem.innerHTML = `
             <div class="d-flex justify-content-between w-100">
                 <h5 class="mb-1">${task.title}</h5>
-                <small>${status}</small>
+                <small>${statusBadge}</small>
             </div>
             <p class="mb-1 small text-secondary">${description}</p>
             <div class="d-flex justify-content-between text-muted small">
@@ -142,6 +146,7 @@ function renderTasks(tasksArray) {
         taskContainer.appendChild(taskItem);
     });
 }
+
 
 // Глобальная переменная для хранения графика
 let rankingChart = null;

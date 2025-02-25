@@ -76,15 +76,19 @@
                     <div class="dropdown">
                         <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" id="sortDropdown"
                                 data-bs-toggle="dropdown">
-                            🔄
+                            🔄 Сортировка
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="#" onclick="sortTasks('completed')">✅ Сначала
-                                выполненные</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="sortTasks('incomplete')">❌ Сначала
-                                невыполненные</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTasks('done')">✅ Сначала выполненные</a>
+                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTasks('inReview')">🧐 Сначала на
+                                проверке</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTasks('inProgress')">⏳ Сначала в
+                                работе</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortTasks('todo')">📌 Сначала TODO</a></li>
                         </ul>
                     </div>
+
                 </h3>
                 <!-- Блок для отображения уровня и XP -->
                 <div id="levelInfo" class="alert alert-dark d-flex justify-content-between align-items-center">
