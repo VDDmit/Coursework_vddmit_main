@@ -13,8 +13,6 @@ async function loadTasks() {
         if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
 
         allTasks = await response.json();
-        console.log("Загруженные задачи:", allTasks); // Отладка
-
         renderFilters();
         filterAndSortTasks();
     } catch (error) {
@@ -50,7 +48,7 @@ function renderFilters() {
 
     document.getElementById("taskSearch").addEventListener("input", filterAndSortTasks);
     document.getElementById("sortTasks").addEventListener("change", filterAndSortTasks);
-    document.getElementById("filterStatus").addEventListener("change", filterAndSortTasks); // Добавил слушатель!
+    document.getElementById("filterStatus").addEventListener("change", filterAndSortTasks);
 }
 
 /** Фильтрация и сортировка задач */
@@ -84,7 +82,6 @@ function filterAndSortTasks() {
 
 /** Отображение списка задач */
 function renderTasks(tasks) {
-    console.log("Отображаем задачи:", tasks); // Отладка
     applyAccessRestrictions();
 
     const listContainer = document.getElementById("task-list");
@@ -100,7 +97,6 @@ async function applyAccessRestrictions() {
     const user = await response.json();
     const userAccessLevel = user.role.accessLevel.trim().toUpperCase(); // Приводим к верхнему регистру
 
-    console.log("Применяем ограничения по доступу для уровня:", userAccessLevel); // Отладка
 
     document.querySelectorAll("[data-access-level]").forEach(element => {
         const requiredLevels = element.getAttribute("data-access-level")
@@ -129,29 +125,34 @@ function taskToHTML(task) {
     const assignedUser = task.assignedUser?.username ? `👤 ${task.assignedUser.username}` : "👤 Не назначен";
 
     return `
-        <div class="card bg-secondary text-light mb-2">
-            <div class="card-body p-2">
-                <h6 class="card-title mb-1">${task.title}</h6>
-                <p class="card-text small text-muted">${description}</p>
-                <div class="d-flex justify-content-between text-muted small">
-                    <span class="text-light">${xp}</span>
-                    <span class="text-light">${projectTitle}</span>
-                    <span class="text-light">${assignedUser}</span>
-                </div>
-                <div class="d-flex justify-content-between w-100">
-                    <small>${statusBadge}</small>
-                    <select class="form-select form-select-sm w-auto" onchange="changeTaskStatus('${task.id}', this.value)">
-                        <option value="TODO" ${task.status === "TODO" ? "selected" : ""}>TODO</option>
-                        <option value="IN_PROGRESS" ${task.status === "IN_PROGRESS" ? "selected" : ""}>В работе</option>
-                        <option value="IN_REVIEW" ${task.status === "IN_REVIEW" ? "selected" : ""}>На проверке</option>
-                        <option value="DONE" data-access-level="MEDIUM,HIGH" ${task.status === "DONE" ? "selected" : ""}>Выполнена</option>
-                    </select>
+        <div class="card bg-secondary text-light mb-3 shadow-sm">
+            <div class="card-body p-3">
+                <h6 class="card-title mb-2">${task.title}</h6>
+                <p class="card-text small text-muted mb-3">${description}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-light fs-5">${xp}</span>
+                        <span class="text-light fs-6">${projectTitle}</span>
+                        <span class="text-light fs-6">${assignedUser}</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-light dropdown-toggle d-flex align-items-center gap-1" type="button" id="dropdownMenuButton${task.id}" data-bs-toggle="dropdown" aria-expanded="false">
+                                ${statusBadge}
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton${task.id}">
+                                <li><a class="dropdown-item" href="#" onclick="changeTaskStatus('${task.id}', 'TODO')">📌 TODO</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="changeTaskStatus('${task.id}', 'IN_PROGRESS')">⏳ В работе</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="changeTaskStatus('${task.id}', 'IN_REVIEW')">🧐 На проверке</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="changeTaskStatus('${task.id}', 'DONE')">✅ Выполнена</a></li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     `;
 }
-
 
 /** Получение бейджа статуса */
 function getStatusBadge(status) {
