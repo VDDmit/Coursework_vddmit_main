@@ -19,7 +19,7 @@ public class UserProject {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private AppUser user;
 
     @ManyToOne

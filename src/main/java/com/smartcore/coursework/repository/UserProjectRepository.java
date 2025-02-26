@@ -18,4 +18,6 @@ public interface UserProjectRepository extends JpaRepository<UserProject, String
     void deleteByProjectIdAndUserId(String projectId, String id);
 
     boolean existsByUserAndProject(AppUser user, Project project);
+
+    UserProject findUserProjectByUser(AppUser user);
 }

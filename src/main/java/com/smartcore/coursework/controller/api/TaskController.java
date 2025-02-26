@@ -1,7 +1,8 @@
 package com.smartcore.coursework.controller.api;
 
-import com.smartcore.coursework.model.Task;
-import com.smartcore.coursework.model.TaskStatus;
+import com.smartcore.coursework.model.*;
+import com.smartcore.coursework.repository.UserProjectRepository;
+import com.smartcore.coursework.service.AppUserAndTokenService;
 import com.smartcore.coursework.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +23,8 @@ import java.util.List;
 @Tag(name = "Tasks", description = "API for tasks management")
 public class TaskController {
     private final TaskService taskService;
+    private final AppUserAndTokenService appUserAndTokenService;
+    private final UserProjectRepository userProjectRepository;
 
     @Operation(
             summary = "Get tasks by assigned user username",
@@ -72,6 +75,31 @@ public class TaskController {
         log.info("Fetching all tasks for project ID: {}", projectId);
         List<Task> tasks = taskService.getAllTasksForProject(projectId);
         log.info("Fetched {} tasks for project ID: {}", tasks.size(), projectId);
+        return ResponseEntity.ok(tasks);
+    }
+
+    @Operation(
+            summary = "Get all tasks from user's assigned project",
+            description = "Retrieves all tasks from the project that the currently authenticated user is assigned to. Requires LOW access level."
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @GetMapping("/list-from-users-project")
+    public ResponseEntity<List<Task>> getAllTasksFromUsersProject(Authentication authentication) {
+        String username = authentication.getName();
+        log.info("Fetching tasks for user: {}", username);
+
+        AppUser user = appUserAndTokenService.getAppUserByUsername(username);
+        UserProject userProject = userProjectRepository.findUserProjectByUser(user);
+
+        if (userProject == null) {
+            log.warn("User {} is not assigned to any project", username);
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        Project project = userProject.getProject();
+        List<Task> tasks = taskService.getAllTasksForProject(project.getId());
+
+        log.info("Fetched {} tasks from project ID: {} for user {}", tasks.size(), project.getId(), username);
         return ResponseEntity.ok(tasks);
     }
 
