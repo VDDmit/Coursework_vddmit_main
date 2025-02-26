@@ -102,4 +102,8 @@ public class TaskService {
             throw new IllegalArgumentException("Task ID cannot be null or empty in " + ClassUtils.getClassAndMethodName());
         }
     }
+
+    public List<Task> getAllTasks() {
+        return taskRepository.findAll();
+    }
 }

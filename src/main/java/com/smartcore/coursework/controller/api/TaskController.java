@@ -84,22 +84,32 @@ public class TaskController {
     )
     @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
     @GetMapping("/list-from-users-project")
-    public ResponseEntity<List<Task>> getAllTasksFromUsersProject(Authentication authentication) {
+    public ResponseEntity<List<Task>> getTasksFromUsersProject(Authentication authentication) {
         String username = authentication.getName();
         log.info("Fetching tasks for user: {}", username);
 
         AppUser user = appUserAndTokenService.getAppUserByUsername(username);
-        UserProject userProject = userProjectRepository.findUserProjectByUser(user);
+        AccessLevel userAccessLevel = user.getRole().getAccessLevel();
 
+        List<Task> tasks;
+
+        if (userAccessLevel == AccessLevel.HIGH) {
+            tasks = taskService.getAllTasks(); // Берем вообще все задачи
+            log.info("Fetched ALL tasks for HIGH level user {}", username);
+            return ResponseEntity.ok(tasks);
+        }
+
+        // Для LOW и MEDIUM проверяем наличие проекта
+        UserProject userProject = userProjectRepository.findUserProjectByUser(user);
         if (userProject == null) {
             log.warn("User {} is not assigned to any project", username);
             return ResponseEntity.badRequest().body(null);
         }
 
         Project project = userProject.getProject();
-        List<Task> tasks = taskService.getAllTasksForProject(project.getId());
+        tasks = taskService.getAllTasksForProject(project.getId()); // Берем только задачи проекта
 
-        log.info("Fetched {} tasks from project ID: {} for user {}", tasks.size(), project.getId(), username);
+        log.info("Fetched {} assigned tasks from project ID: {} for LOW/MEDIUM level user {}", tasks.size(), project.getId(), username);
         return ResponseEntity.ok(tasks);
     }
 
