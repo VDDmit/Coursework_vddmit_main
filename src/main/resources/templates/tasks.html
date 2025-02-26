@@ -14,6 +14,14 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        .task-list {
+        max-height: 400px; /* Высота контейнера */
+        overflow-y: auto;  /* Вертикальный скролл */
+        border: 1px solid #6c757d;
+    }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-mid-gray">
@@ -60,6 +68,16 @@
         </ul>
     </div>
 </nav>
+
+<!-- Задачи с проекта -->
+<div class="container mt-4">
+    <h2 class="text-light">Список задач моего проекта</h2>
+    <div id="tasks-container" class="task-list bg-dark text-light p-3 rounded mt-4">
+        <p class="text-center text-muted">Загрузка задач...</p>
+    </div>
+</div>
+
+
 </body>
 <!-- Подключение Bootstrap -->
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
@@ -67,5 +85,6 @@
 <script th:src="@{/js/auth.js}"></script>
 <script th:src="@{/js/check-token-redirect-to-login.js}"></script>
 <script th:src="@{/js/mini-user-in-navbar.js}"></script>
+<script th:src="@{/js/tasks.js}"></script>
 <script th:src="@{/js/register-app-user.js}"></script>
 </html>
