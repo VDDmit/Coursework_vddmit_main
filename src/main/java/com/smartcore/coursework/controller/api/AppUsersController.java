@@ -38,6 +38,15 @@ public class AppUsersController {
     }
 
 
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @GetMapping("/list")
+    @Operation(summary = "Get a list of all users",
+            description = "Returns a list of all registered users. Available to users with Low and higher access level.")
+    public ResponseEntity<List<AppUser>> getAllUsers() {
+        List<AppUser> appUserList = appUserAndTokenService.getAllAppUsers();
+        return ResponseEntity.ok(appUserList);
+    }
+
     @Operation(
             summary = "Get the list of users without team",
             description = "Returns the list of AppUsers without team. Access Level: LOW"
