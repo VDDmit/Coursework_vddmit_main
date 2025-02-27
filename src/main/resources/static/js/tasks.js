@@ -127,7 +127,7 @@ function taskToHTML(task) {
     return `
         <div class="card bg-secondary text-light mb-3 shadow-sm">
             <div class="card-body p-3">
-                <h6 class="card-title mb-2">${task.title}</h6>
+                <h6 class="card-title mb-2 fs-4">${task.title}</h6>
                 <p class="card-text small text-muted mb-3">${description}</p>
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center gap-3">

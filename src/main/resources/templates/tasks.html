@@ -68,6 +68,8 @@
     </style>
 </head>
 <body>
+
+<!-- Навигационная панель -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-mid-gray">
     <div class="container-fluid">
         <a class="navbar-brand fs-3" href="/dashboard">SmartCore</a>
@@ -77,12 +79,11 @@
 
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav">
-
-                <li class="nav-item">
-                    <a class="nav-link fs-5 px-3" href="/projects">Проекты</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link fs-5 px-3" href="/teams">Команды</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5 px-3" href="/projects">Проекты</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link fs-5 px-3" href="/rewords">Награды</a>
@@ -116,7 +117,7 @@
 <div class="container mt-4" style="position: relative;">
     <!-- Кнопка закреплена выше заголовка -->
     <div id="admin-buttons" class="mt-4 mb-4 m">
-        <button class="btn btn-primary" data-access-level="HIGH" onclick="createTask()">
+        <button class="btn btn-primary" data-access-level="HIGH" onclick="location.href='/create_task'">
             <i class="bi bi-plus-circle"></i> Создать задачу
         </button>
     </div>
