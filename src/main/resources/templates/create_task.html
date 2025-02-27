@@ -1,10 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание задачи | SmartCore</title>
+    <link rel="icon" href="/favicon.png">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.3/css/bootstrap.min.css}">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Кастомные стили -->
+    <link rel="stylesheet" th:href="@{/css/dashboard-styles.css}">
 </head>
+<style>
+    .form-control, .form-select {
+        background-color: #2d2d2d; /* Темно-серый фон */
+        color: #ffffff; /* Белый текст */
+        border: 1px solid #444; /* Мягкая рамка */
+    }
+
+    .form-control:focus, .form-select:focus {
+        background-color: #3a3a3a; /* Чуть светлее при фокусе */
+        border-color: #666; /* Мягкое выделение */
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.2); /* Светящееся кольцо */
+    }
+
+    /* Уменьшение резкости плейсхолдера */
+    .form-control::placeholder {
+        color: #bbbbbb;
+    }
+</style>
 <body>
 
+<!-- Навигационная панель -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-mid-gray">
+    <div class="container-fluid">
+        <a class="navbar-brand fs-3" href="/dashboard">SmartCore</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link fs-5 px-3" href="/teams">Команды</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5 px-3" href="/projects">Проекты</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5 px-3" href="/tasks">Задачи</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-5 px-3" href="/rewords">Награды</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Профиль пользователя справа -->
+        <ul class="navbar-nav d-flex align-items-center ms-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle d-flex align-items-center fs-5 px-3" href="#" id="userDropdown"
+                   data-bs-toggle="dropdown">
+                    <img id="userAvatar" src="/img/avatar-default.png" alt="Аватар" class="rounded-circle"
+                         width="32" height="32">
+                    <span id="username" class="ms-2">Загрузка...</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="/profile">Профиль</a></li>
+                    <li><a class="dropdown-item" href="/my_team">Моя команда</a></li>
+                    <li>
+                        <a class="dropdown-item text-warning" href="#" data-access-level="HIGH"
+                           onclick="openRegisterModal()">Зарегистрировать пользователя</a>
+                    </li>
+                    <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Выход</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div id="task-form-container" class="mt-2ё p-4 bg-dark text-light rounded">
+    <h4>Создать задачу</h4>
+    <form id="task-form">
+        <div class="mb-3">
+            <label for="task-title" class="form-label mt-4">Название</label>
+            <input type="text" class="form-control" id="task-title" required>
+        </div>
+        <div class="mb-3">
+            <label for="task-desc" class="form-label">Описание</label>
+            <textarea class="form-control" id="task-desc" rows="3"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="task-user" class="form-label">Назначить пользователю</label>
+            <select class="form-select" id="task-user" required>
+                <option value="">Выберите пользователя...</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="task-project" class="form-label">Проект</label>
+            <select class="form-select" id="task-project" required>
+                <option value="">Выберите проект...</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="task-status" class="form-label">Статус</label>
+            <select class="form-select" id="task-status" required>
+                <option value="TODO">TODO</option>
+                <option value="IN_PROGRESS">IN PROGRESS</option>
+                <option value="DONE">DONE</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="task-xp" class="form-label light-gray">Очки опыта</label>
+            <input type="number" class="form-control" id="task-xp" required min="1">
+        </div>
+        <button type="submit" class="btn btn-primary">Создать задачу</button>
+    </form>
+</div>
+
 </body>
+<!-- Подключение Bootstrap -->
+<script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
+<!-- Скрипты -->
+<script th:src="@{/js/auth.js}"></script>
+<script th:src="@{/js/check-token-redirect-to-login.js}"></script>
+<script th:src="@{/js/mini-user-in-navbar.js}"></script>
+<script th:src="@{/js/create-task.js}"></script>
+<script th:src="@{/js/register-app-user.js}"></script>
 </html>
