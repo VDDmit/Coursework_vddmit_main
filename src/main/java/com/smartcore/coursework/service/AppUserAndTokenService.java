@@ -71,7 +71,7 @@ public class AppUserAndTokenService {
     }
 
     private int calculateLevelFromXp(int xp) {
-        int level = xp / 1000;
+        int level = xp / 1000 + 1;
         return Math.min(level, 25);  // Limit the maximum level 10
     }
 
