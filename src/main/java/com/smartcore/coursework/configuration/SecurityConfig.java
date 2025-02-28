@@ -26,9 +26,12 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF, если используем API
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**", "/img/**", "/webjars/**", "/favicon.png").permitAll()
-                        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
-                        .requestMatchers("/dashboard", "/teams", "/projects", "/tasks", "/create_task").permitAll()
+                        .requestMatchers("/login", "/css/**", "/js/**", "/img/**", "/webjars/**", "/favicon.png")
+                        .permitAll()
+                        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/error")
+                        .permitAll()
+                        .requestMatchers("/dashboard", "/teams", "/projects", "/tasks", "/create_task", "/rewards")
+                        .permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // JWT Фильтр
