@@ -13,6 +13,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <!-- Кастомные стили -->
     <link rel="stylesheet" th:href="@{/css/dashboard-styles.css}">
+    <style>
+        #levelInfo {
+            background: linear-gradient(135deg, #2c3e50, #34495e); /* Темные синие и серые оттенки */
+        }
+
+    </style>
+
 </head>
 <body class="bg-dark text-light">
 
@@ -91,11 +98,13 @@
 
                 </h3>
                 <!-- Блок для отображения уровня и XP -->
-                <div id="levelInfo" class="alert alert-dark d-flex justify-content-between align-items-center">
-                    <span id="levelText">Уровень: ...</span>
-                    <span id="xpText">XP: ...</span>
-                    <span id="nextLevelText">До след. уровня: ... XP</span>
+                <div id="levelInfo" class="alert alert-dark d-flex flex-column align-items-start p-4 rounded-3 shadow-lg">
+                    <span id="levelText" class="fs-5 fw-bold text-light mb-2">Уровень: ...</span>
+                    <span id="xpText" class="fs-5 text-warning mb-2">XP: ...</span>
+                    <span id="nextLevelText" class="fs-5 text-light">До след. уровня: ... XP</span>
                 </div>
+
+
 
                 <!-- Поле поиска задач -->
                 <label for="searchInput"></label><input type="text" id="searchInput" placeholder="Поиск задач..."
