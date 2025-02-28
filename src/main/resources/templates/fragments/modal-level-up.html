@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="level-up-modal">
+    <!-- Модальное окно повышения уровня-->
+    <div class="modal fade" id="levelUpModal" tabindex="-1" aria-labelledby="levelUpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="levelUpModalLabel">🎉 Поздравляем!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <h4>Вы достигли <span id="newLevel" class="text-warning"></span> уровня!</h4>
+                    <p>Продолжайте в том же духе!</p>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Отлично!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

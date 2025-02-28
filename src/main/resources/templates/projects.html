@@ -97,12 +97,14 @@
     </div>
 </div>
 
+<th:block th:insert="fragments/modal-level-up :: level-up-modal"></th:block>
 
 </body>
 <!-- Подключение Bootstrap -->
 <script th:src="@{/webjars/bootstrap/5.3.3/js/bootstrap.bundle.min.js}"></script>
 <!-- Скрипты -->
 <script th:src="@{/js/auth.js}"></script>
+<script th:src="@{/js/level-up.js}"></script>
 <script th:src="@{/js/check-token-redirect-to-login.js}"></script>
 <script th:src="@{/js/mini-user-in-navbar.js}"></script>
 <script th:src="@{/js/register-app-user.js}"></script>

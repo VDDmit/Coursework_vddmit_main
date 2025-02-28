@@ -187,6 +187,9 @@
     </div>
 </div>
 
+<th:block th:insert="fragments/modal-level-up :: level-up-modal"></th:block>
+
+</body>
 <!-- Подключаем Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -196,8 +199,8 @@
 <!-- Скрипты -->
 <script th:src="@{/js/mini-user-in-navbar.js}"></script>
 <script th:src="@{/js/auth.js}"></script>
+<script th:src="@{/js/level-up.js}"></script>
 <script th:src="@{/js/check-token-redirect-to-login.js}"></script>
 <script th:src="@{/js/teams.js}"></script>
 <script th:src="@{/js/register-app-user.js}"></script>
-</body>
 </html>
