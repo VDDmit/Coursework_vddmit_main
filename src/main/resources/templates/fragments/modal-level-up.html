@@ -5,18 +5,19 @@
     <!-- Модальное окно повышения уровня-->
     <div class="modal fade" id="levelUpModal" tabindex="-1" aria-labelledby="levelUpModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-light">
-                <div class="modal-header border-secondary">
+            <div class="modal-content bg-dark text-light border-0 rounded-4 shadow-lg">
+                <div class="modal-header border-0">
                     <h5 class="modal-title" id="levelUpModalLabel">🎉 Поздравляем!</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Закрыть"></button>
                 </div>
                 <div class="modal-body text-center">
-                    <h4>Вы достигли <span id="newLevel" class="text-warning"></span> уровня!</h4>
-                    <p>Продолжайте в том же духе!</p>
+                    <h4 class="display-4 fw-bold text-warning" id="newLevel"></h4>
+                    <p class="text-info fs-4">Вы достигли нового уровня! Поздравляем, ваш прогресс впечатляет!</p>
+                    <p class="fs-6 text-light">Можете забрать свой подарок в разделе "Награды"</p>
                 </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Отлично!</button>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-lg btn-outline-warning" data-bs-dismiss="modal">Отлично!</button>
                 </div>
             </div>
         </div>
