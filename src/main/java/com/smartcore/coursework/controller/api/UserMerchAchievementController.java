@@ -51,6 +51,24 @@ public class UserMerchAchievementController {
     }
 
     @Operation(
+            summary = "Get obtained user achievements",
+            description = "Returns only the list of obtained achievements for the authenticated user."
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @GetMapping("/obtained")
+    public ResponseEntity<List<String>> getObtainedAchievements() {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<String> obtainedAchievements = userMerchAchievementService
+                .getAllUserMerchAchievementsByUserUsername(currentUsername)
+                .stream()
+                .map(UserMerchAchievement::getName)
+                .toList();
+
+        return ResponseEntity.ok(obtainedAchievements);
+    }
+
+
+    @Operation(
             summary = "Issue a new achievement to a user",
             description = "Grants a new merchandise achievement to the specified user. Requires HIGH access level."
     )
