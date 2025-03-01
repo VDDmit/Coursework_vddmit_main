@@ -1,6 +1,7 @@
 package com.smartcore.coursework.controller.api;
 
 import com.smartcore.coursework.dto.UserMerchAchievementDTO;
+import com.smartcore.coursework.model.AppUser;
 import com.smartcore.coursework.model.UserMerchAchievement;
 import com.smartcore.coursework.service.AppUserAndTokenService;
 import com.smartcore.coursework.service.gamification.UserMerchAchievementService;
@@ -65,6 +66,31 @@ public class UserMerchAchievementController {
                 .toList();
 
         return ResponseEntity.ok(obtainedAchievements);
+    }
+
+    @Operation(
+            summary = "Request an award from the administrator",
+            description = "Sends an email notification to the administrator when a user requests a reward."
+    )
+    @PreAuthorize("@appUserAndTokenService.hasRequiredAccess(authentication.principal.username, T(com.smartcore.coursework.model.AccessLevel).LOW)")
+    @PostMapping("/request-an-administrator-award")
+    public ResponseEntity<?> requestAnAdministratorAchievement(
+            @RequestParam String username,
+            @RequestParam String achievementName
+    ) {
+        try {
+            log.info("User '{}' requested an administrator award '{}'", username, achievementName);
+
+            AppUser user = appUserAndTokenService.getAppUserByUsername(username);
+            String userEmail = user.getEmail();
+
+            userMerchAchievementService.notifyAdminAboutAchievementRequest(username, userEmail, achievementName);
+
+            return ResponseEntity.ok("Request for award '" + achievementName + "' has been sent to the administrator.");
+        } catch (RuntimeException e) {
+            log.error("Error while requesting an award: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
