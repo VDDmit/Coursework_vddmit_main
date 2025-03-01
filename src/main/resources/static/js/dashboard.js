@@ -96,7 +96,7 @@ function renderTasks(tasksArray) {
     taskContainer.innerHTML = ""; // Очистка контейнера
 
     if (!tasksArray.length) {
-        taskContainer.innerHTML = `<p class="text-secondary">У вас нет задач.</p>`;
+        taskContainer.innerHTML = `<p class="text-secondary text-dark">У вас нет задач.</p>`;
         return;
     }
 
