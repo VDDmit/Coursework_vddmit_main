@@ -59,6 +59,14 @@
     </div>
 </nav>
 
+<div class="container mt-5">
+    <h2 class="text-center text-light mb-4">Ваши награды</h2>
+    <div id="achievements-container" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <!-- Карточки наград -->
+    </div>
+</div>
+
+
 <!-- Глобальное модальное окно -->
 <th:block th:insert="fragments/modal-level-up :: level-up-modal"></th:block>
 
@@ -70,6 +78,7 @@
 <script th:src="@{/js/mini-user-in-navbar.js}"></script>
 <script th:src="@{/js/auth.js}"></script>
 <script th:src="@{/js/level-up.js}"></script>
+<script src="/js/rewards.js"></script>
 <script th:src="@{/js/check-token-redirect-to-login.js}"></script>
 <script th:src="@{/js/register-app-user.js}"></script>
 </html>
