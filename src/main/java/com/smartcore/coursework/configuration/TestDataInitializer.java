@@ -4,6 +4,7 @@ import com.smartcore.coursework.model.*;
 import com.smartcore.coursework.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,7 @@ import java.util.Set;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@DependsOn("roleInitializer")
 class TestDataInitializer {
 
     private final RoleRepository roleRepository;
