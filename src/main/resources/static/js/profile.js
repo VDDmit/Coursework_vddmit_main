@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     try {
         await loadUserProfile();  // Загружаем профиль
         await updateUserLevelInfo();  // Загружаем XP и уровень
-        await loadRankingChart();  // Загружаем рейтинг
     } catch (error) {
         console.error("Ошибка при загрузке данных:", error);
         logout();
@@ -53,7 +52,6 @@ async function updateUserLevelInfo() {
     }
 }
 
-
 // Функция обновления прогресс-бара опыта
 function updateXPProgressBar(currentXP, nextLevelXP, level) {
     const progressBar = document.getElementById("xpProgressBar");
@@ -69,83 +67,9 @@ function updateXPProgressBar(currentXP, nextLevelXP, level) {
 
     progressBar.style.width = `${percentage.toFixed(2)}%`;
     progressBar.textContent = `${percentage.toFixed(2)}%`;
-}
 
-
-// Функция загрузки рейтинга пользователей
-async function loadRankingChart() {
-    try {
-        const response = await fetchWithAuth("/api/users/me_in_top_list");
-        if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
-
-        const topUsers = await response.json();
-
-        // Преобразуем данные для диаграммы
-        const labels = topUsers.map(user => user.user.username);
-        const xpData = topUsers.map(user => user.user.xp);
-        const ranks = topUsers.map(user => `#${user.rank}`);
-
-        // Отрисовываем диаграмму
-        renderRankingChart(labels, xpData, ranks);
-
-    } catch (error) {
-        console.error("Ошибка загрузки рейтинга:", error);
-    }
-}
-
-// Функция отрисовки диаграммы с рейтингом
-function renderRankingChart(labels, xpData, ranks) {
-    const ctx = document.getElementById("rankingChart").getContext("2d");
-
-    // Удаляем предыдущий график, если он уже существует
-    if (window.rankingChart instanceof Chart) {
-        window.rankingChart.destroy();
-    }
-
-    window.rankingChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "XP",
-                data: xpData,
-                backgroundColor: labels.map(name =>
-                    name === document.getElementById("username").textContent ? "#ffcc00" : "#007bff"
-                ),
-                borderColor: "#fff",
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    ticks: {
-                        color: "#fff"
-                    }
-                },
-                y: {
-                    ticks: {
-                        color: "#fff"
-                    },
-                    beginAtZero: true
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: "#fff"
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            return `${ranks[context.dataIndex]} - ${context.raw} XP`;
-                        }
-                    }
-                }
-            }
-        }
-    });
+    // Стили для корректного отображения
+    progressBar.style.color = "black"; // Черный текст
+    progressBar.style.fontWeight = "bold"; // Жирный шрифт
+    progressBar.style.lineHeight = "30px";
 }
