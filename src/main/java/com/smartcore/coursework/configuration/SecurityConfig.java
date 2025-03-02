@@ -30,7 +30,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/error")
                         .permitAll()
-                        .requestMatchers("/dashboard", "/teams", "/projects", "/tasks", "/create_task", "/rewards")
+                        .requestMatchers("/dashboard", "/teams", "/projects",
+                                "/tasks", "/create_task", "/rewards","/profile")
                         .permitAll()
                         .anyRequest().authenticated()
                 )
